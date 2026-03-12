@@ -1,0 +1,43 @@
+export interface UsageProbe {
+  id: string;
+  name: string;
+  color: string;
+  checkAuth(): Promise<AuthStatus>;
+  fetchUsage(): Promise<UsageData[] | null>;
+}
+
+export type AuthStatus =
+  | { status: 'authenticated'; account: string }
+  | { status: 'expired'; message: string }
+  | { status: 'not_logged_in' };
+
+export interface UsageData {
+  provider: string;
+  orgId: string;
+  orgName: string;
+  fetchedAt: number;
+  authStatus: AuthStatus;
+  session?: QuotaWindow;
+  weekly?: QuotaWindow;
+  daily?: QuotaWindow;
+  models?: ModelUsage[];
+  extra?: {
+    spent: number;
+    limit: number;
+    currency: string;
+  };
+  plan?: string;
+}
+
+export interface QuotaWindow {
+  used: number; // 0-1
+  resetAt: string; // ISO string
+  label?: string;
+}
+
+export interface ModelUsage {
+  model: string;
+  used: number; // 0-1
+  resetAt?: string; // ISO string
+  tooltip?: string;
+}

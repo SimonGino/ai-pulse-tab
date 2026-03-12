@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { width: 500px; font-family: monospace; font-size: 13px; padding: 12px; }
+    button { padding: 8px 16px; font-size: 14px; cursor: pointer; margin-bottom: 12px; }
+    .pass { color: #22c55e; font-weight: bold; }
+    .fail { color: #ef4444; font-weight: bold; }
+    pre { background: #1e1e1e; color: #d4d4d4; padding: 12px; border-radius: 6px;
+          white-space: pre-wrap; word-break: break-all; max-height: 400px; overflow: auto; }
+    h3 { margin: 8px 0 4px; }
+  </style>
+</head>
+<body>
+  <h2>MV3 Cookie PoC</h2>
+  <p>测试 Service Worker 中 Cookie 方案</p>
+  <button id="run">运行 Cookie 测试 (3 方案)</button>
+  <button id="fetchUsage">获取 Claude Usage (真实响应)</button>
+  <button id="testChatgpt">测试 ChatGPT credentials:include</button>
+  <button id="copyResult">复制结果到剪贴板</button>
+  <div id="output"></div>
+  <script src="popup.js"></script>
+</body>
+</html>
