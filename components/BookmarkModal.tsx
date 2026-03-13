@@ -1,4 +1,9 @@
 import { useState } from 'react';
+import {
+  deriveBookmarkLetter,
+  normalizeBookmarkLetter,
+  validateBookmarkForm,
+} from '@/core/bookmark-utils';
 import { BOOKMARK_COLORS } from '@/core/constants';
 import type { Bookmark } from '@/core/types';
 
@@ -15,19 +20,10 @@ export function BookmarkModal({ bookmark, onSave, onClose }: BookmarkModalProps)
   const [color, setColor] = useState(bookmark?.color ?? BOOKMARK_COLORS[0]);
   const [errors, setErrors] = useState<{ name?: string; url?: string }>({});
 
-  const handleNameChange = (value: string) => {
-    setName(value);
-    if (!bookmark && !letter) {
-      // Auto-set letter from first char when adding new bookmark
-    }
-  };
-
-  const derivedLetter = letter || name.charAt(0).toUpperCase() || '?';
+  const derivedLetter = deriveBookmarkLetter(name, letter);
 
   const handleSubmit = () => {
-    const newErrors: { name?: string; url?: string } = {};
-    if (!name.trim()) newErrors.name = 'Name is required';
-    if (!url.trim()) newErrors.url = 'URL is required';
+    const newErrors = validateBookmarkForm(name, url);
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
@@ -86,7 +82,7 @@ export function BookmarkModal({ bookmark, onSave, onClose }: BookmarkModalProps)
           <input
             type="text"
             value={name}
-            onChange={(e) => { handleNameChange(e.target.value); setErrors((p) => ({ ...p, name: undefined })); }}
+            onChange={(e) => { setName(e.target.value); setErrors((p) => ({ ...p, name: undefined })); }}
             className="pixel-font w-full p-2 outline-none"
             style={{
               fontSize: '10px',
@@ -154,7 +150,7 @@ export function BookmarkModal({ bookmark, onSave, onClose }: BookmarkModalProps)
           <input
             type="text"
             value={letter}
-            onChange={(e) => setLetter(e.target.value.slice(0, 2).toUpperCase())}
+            onChange={(e) => setLetter(normalizeBookmarkLetter(e.target.value))}
             className="pixel-font w-full p-2 outline-none"
             style={{
               fontSize: '10px',

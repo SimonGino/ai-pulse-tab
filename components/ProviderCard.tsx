@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { updateCollapsedProvidersMap } from '@/core/bookmark-utils';
 import type { UsageData } from '@/core/types';
 import { STORAGE_KEYS } from '@/core/constants';
 import { QuotaBar } from './QuotaBar';
@@ -110,29 +111,58 @@ export function ProviderCard({
   const isSingleOrg = usageDataList.length === 1;
   const indicatorColor = color ?? 'var(--pixel-yellow)';
   const [collapsed, setCollapsed] = useState(false);
+  const collapsedRef = useRef(false);
+  const persistQueueRef = useRef<Promise<void>>(Promise.resolve());
 
   useEffect(() => {
+    let active = true;
+
     browser.storage.local
       .get(STORAGE_KEYS.collapsedProviders)
       .then((result: Record<string, unknown>) => {
+        if (!active) {
+          return;
+        }
+
         const map = (result[STORAGE_KEYS.collapsedProviders] ?? {}) as Record<string, boolean>;
-        if (map[providerName]) setCollapsed(true);
+        const storedCollapsed = Boolean(map[providerName]);
+        collapsedRef.current = storedCollapsed;
+        setCollapsed(storedCollapsed);
       });
+
+    return () => {
+      active = false;
+    };
   }, [providerName]);
 
+  const persistCollapsedState = useCallback(
+    (next: boolean) => {
+      persistQueueRef.current = persistQueueRef.current
+        .then(async () => {
+          const result = await browser.storage.local.get(STORAGE_KEYS.collapsedProviders);
+          const map = (result[STORAGE_KEYS.collapsedProviders] ?? {}) as Record<string, boolean>;
+          await browser.storage.local.set({
+            [STORAGE_KEYS.collapsedProviders]: updateCollapsedProvidersMap(map, providerName, next),
+          });
+        })
+        .catch((error: unknown) => {
+          console.error('Failed to persist collapsed provider state', error);
+        });
+
+      return persistQueueRef.current;
+    },
+    [providerName],
+  );
+
   const toggleCollapse = () => {
-    const next = !collapsed;
+    const next = !collapsedRef.current;
+    collapsedRef.current = next;
     setCollapsed(next);
-    browser.storage.local
-      .get(STORAGE_KEYS.collapsedProviders)
-      .then((result: Record<string, unknown>) => {
-        const map = { ...((result[STORAGE_KEYS.collapsedProviders] ?? {}) as Record<string, boolean>) };
-        map[providerName] = next;
-        browser.storage.local.set({ [STORAGE_KEYS.collapsedProviders]: map });
-      });
+    void persistCollapsedState(next);
+
     // When expanding a collapsed provider, trigger immediate refresh
     if (!next) {
-      browser.runtime.sendMessage({ type: 'REFRESH_PROVIDER', providerId });
+      void browser.runtime.sendMessage({ type: 'REFRESH_PROVIDER', providerId });
     }
   };
 

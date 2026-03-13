@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { shouldCloseBookmarkContextMenu } from '@/core/bookmark-utils';
 import { useBookmarks } from '@/hooks/useBookmarks';
 import { BookmarkModal } from './BookmarkModal';
 import type { Bookmark } from '@/core/types';
@@ -18,10 +19,15 @@ export function BookmarkGrid() {
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const handleClick = () => setContextMenu(null);
+    const handleClickOutside = (event: MouseEvent) => {
+      if (shouldCloseBookmarkContextMenu(menuRef.current, event.target)) {
+        setContextMenu(null);
+      }
+    };
+
     if (contextMenu) {
-      document.addEventListener('click', handleClick);
-      return () => document.removeEventListener('click', handleClick);
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
     }
   }, [contextMenu]);
 

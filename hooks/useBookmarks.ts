@@ -1,27 +1,39 @@
-import { useEffect, useState, useCallback } from 'react';
-import { STORAGE_KEYS, DEFAULT_BOOKMARKS, BOOKMARK_COLORS } from '@/core/constants';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  addBookmarkToList,
+  deleteBookmarkFromList,
+  editBookmarkInList,
+  sortBookmarks,
+} from '@/core/bookmark-utils';
+import { STORAGE_KEYS, DEFAULT_BOOKMARKS } from '@/core/constants';
 import type { Bookmark } from '@/core/types';
 
 export function useBookmarks() {
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
+  const bookmarksRef = useRef<Bookmark[]>([]);
 
   useEffect(() => {
     browser.storage.local
       .get(STORAGE_KEYS.bookmarks)
       .then((result: Record<string, unknown>) => {
         if (result[STORAGE_KEYS.bookmarks]) {
-          setBookmarks(result[STORAGE_KEYS.bookmarks] as Bookmark[]);
+          const storedBookmarks = result[STORAGE_KEYS.bookmarks] as Bookmark[];
+          bookmarksRef.current = storedBookmarks;
+          setBookmarks(storedBookmarks);
         } else {
           // First time: initialize with defaults
           const defaults = [...DEFAULT_BOOKMARKS] as unknown as Bookmark[];
           browser.storage.local.set({ [STORAGE_KEYS.bookmarks]: defaults });
+          bookmarksRef.current = defaults;
           setBookmarks(defaults);
         }
       });
 
     const listener = (changes: Record<string, { newValue?: unknown }>) => {
       if (changes[STORAGE_KEYS.bookmarks]?.newValue) {
-        setBookmarks(changes[STORAGE_KEYS.bookmarks].newValue as Bookmark[]);
+        const updatedBookmarks = changes[STORAGE_KEYS.bookmarks].newValue as Bookmark[];
+        bookmarksRef.current = updatedBookmarks;
+        setBookmarks(updatedBookmarks);
       }
     };
     browser.storage.local.onChanged.addListener(listener);
@@ -32,43 +44,44 @@ export function useBookmarks() {
     browser.storage.local.set({ [STORAGE_KEYS.bookmarks]: updated });
   }, []);
 
-  const addBookmark = useCallback(
-    (name: string, url: string, letter?: string, color?: string) => {
-      const maxOrder = bookmarks.reduce((max, b) => Math.max(max, b.order), -1);
-      const newBookmark: Bookmark = {
-        id: crypto.randomUUID(),
-        name,
-        url,
-        letter: letter || name.charAt(0).toUpperCase(),
-        color: color || BOOKMARK_COLORS[bookmarks.length % BOOKMARK_COLORS.length],
-        order: maxOrder + 1,
-      };
-      const updated = [...bookmarks, newBookmark];
+  const applyBookmarks = useCallback(
+    (updater: (current: Bookmark[]) => Bookmark[]) => {
+      const updated = updater(bookmarksRef.current);
+      bookmarksRef.current = updated;
       setBookmarks(updated);
       persist(updated);
     },
-    [bookmarks, persist],
+    [persist],
+  );
+
+  const addBookmark = useCallback(
+    (name: string, url: string, letter?: string, color?: string) => {
+      applyBookmarks((current) => addBookmarkToList(current, {
+        id: crypto.randomUUID(),
+        name,
+        url,
+        letter,
+        color,
+      }));
+    },
+    [applyBookmarks],
   );
 
   const editBookmark = useCallback(
     (id: string, changes: Partial<Pick<Bookmark, 'name' | 'url' | 'letter' | 'color'>>) => {
-      const updated = bookmarks.map((b) => (b.id === id ? { ...b, ...changes } : b));
-      setBookmarks(updated);
-      persist(updated);
+      applyBookmarks((current) => editBookmarkInList(current, id, changes));
     },
-    [bookmarks, persist],
+    [applyBookmarks],
   );
 
   const deleteBookmark = useCallback(
     (id: string) => {
-      const updated = bookmarks.filter((b) => b.id !== id);
-      setBookmarks(updated);
-      persist(updated);
+      applyBookmarks((current) => deleteBookmarkFromList(current, id));
     },
-    [bookmarks, persist],
+    [applyBookmarks],
   );
 
-  const sorted = [...bookmarks].sort((a, b) => a.order - b.order);
+  const sorted = sortBookmarks(bookmarks);
 
   return { bookmarks: sorted, addBookmark, editBookmark, deleteBookmark };
 }

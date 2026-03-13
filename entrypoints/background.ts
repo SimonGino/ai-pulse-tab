@@ -23,7 +23,7 @@ export default defineBackground(() => {
     console.log(`[AI Pulse Tab] Refreshing ${providerId}...`);
 
     const cached = await browser.storage.local.get(STORAGE_KEYS.usageData);
-    const cachedData: UsageData[] = cached[STORAGE_KEYS.usageData] ?? [];
+    const cachedData = (cached[STORAGE_KEYS.usageData] ?? []) as UsageData[];
 
     let freshData: UsageData[] | null = null;
     try {
@@ -62,7 +62,7 @@ export default defineBackground(() => {
 
     // Get cached data for fallback
     const cached = await browser.storage.local.get(STORAGE_KEYS.usageData);
-    const cachedData: UsageData[] = cached[STORAGE_KEYS.usageData] ?? [];
+    const cachedData = (cached[STORAGE_KEYS.usageData] ?? []) as UsageData[];
 
     const [claudeResult, chatgptResult] = await Promise.allSettled([
       shouldRefreshClaude ? claudeProbe.fetchUsage() : Promise.resolve(null),
