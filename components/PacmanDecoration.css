@@ -31,7 +31,7 @@
 .pacman-character::before {
   top: 0;
   left: 0;
-  border: 10px solid #ffff00;
+  border: 10px solid var(--pixel-yellow);
   border-right-color: transparent;
   animation: pacman-chomp-top 0.3s ease-in-out infinite alternate;
 }
@@ -40,7 +40,7 @@
 .pacman-character::after {
   bottom: 0;
   left: 0;
-  border: 10px solid #ffff00;
+  border: 10px solid var(--pixel-yellow);
   border-right-color: transparent;
   animation: pacman-chomp-bottom 0.3s ease-in-out infinite alternate;
 }
@@ -78,7 +78,7 @@
   bottom: 0;
   width: 20px;
   height: 20px;
-  background: #ff0000;
+  background: var(--pixel-red);
   border-radius: 10px 10px 0 0;
   animation: ghost-move 12s linear infinite;
 }
@@ -103,9 +103,9 @@
   width: 20px;
   height: 6px;
   background:
-    radial-gradient(circle 3px at 3px 0, transparent 3px, #ff0000 3px) bottom left,
-    radial-gradient(circle 3px at 3px 0, transparent 3px, #ff0000 3px) bottom center,
-    radial-gradient(circle 3px at 4px 0, transparent 3px, #ff0000 3px) bottom right;
+    radial-gradient(circle 3px at 3px 0, transparent 3px, var(--pixel-red) 3px) bottom left,
+    radial-gradient(circle 3px at 3px 0, transparent 3px, var(--pixel-red) 3px) bottom center,
+    radial-gradient(circle 3px at 4px 0, transparent 3px, var(--pixel-red) 3px) bottom right;
   background-size: 7px 6px;
   background-repeat: no-repeat;
 }
@@ -133,7 +133,7 @@
 .pac-dot {
   width: 4px;
   height: 4px;
-  background: #ffb8ff;
+  background: var(--pixel-pink);
   border-radius: 0;
   opacity: 0.6;
   animation: dot-blink 3s ease-in-out infinite alternate;

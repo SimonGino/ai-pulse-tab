@@ -84,3 +84,17 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* === Quick Link Card Hover === */
+.quick-link-card {
+  transition: background-color 0.1s, box-shadow 0.1s;
+}
+
+.quick-link-card:hover {
+  background-color: #2a2a4e !important;
+  box-shadow:
+    -2px 0 0 0 var(--hover-color),
+    2px 0 0 0 var(--hover-color),
+    0 -2px 0 0 var(--hover-color),
+    0 2px 0 0 var(--hover-color) !important;
+}

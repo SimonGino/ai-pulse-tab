@@ -4,7 +4,6 @@ import { ResetCountdown } from './ResetCountdown';
 
 interface ProviderCardProps {
   providerName: string;
-  color: string;
   usageDataList: UsageData[];
 }
 
@@ -17,8 +16,8 @@ function OrgCard({ data }: { data: UsageData }) {
       >
         <p className="text-sm" style={{ color: 'var(--pixel-white)' }}>
           {data.authStatus.status === 'expired'
-            ? '请重新登录 claude.ai'
-            : '请登录 claude.ai'}
+            ? 'Please re-login to claude.ai'
+            : 'Please login to claude.ai'}
         </p>
         <a
           href="https://claude.ai"

@@ -23,6 +23,7 @@ export function QuickLinks() {
             rel="noopener noreferrer"
             className="quick-link-card flex flex-col items-center gap-2 p-3 transition-all"
             style={{
+              '--hover-color': link.color,
               backgroundColor: 'var(--pixel-dark)',
               boxShadow: `
                 -2px 0 0 0 var(--pixel-border),
@@ -30,25 +31,7 @@ export function QuickLinks() {
                 0 -2px 0 0 var(--pixel-border),
                 0 2px 0 0 var(--pixel-border)
               `,
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.boxShadow = `
-                -2px 0 0 0 ${link.color},
-                2px 0 0 0 ${link.color},
-                0 -2px 0 0 ${link.color},
-                0 2px 0 0 ${link.color}
-              `;
-              e.currentTarget.style.backgroundColor = '#2a2a4e';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.boxShadow = `
-                -2px 0 0 0 var(--pixel-border),
-                2px 0 0 0 var(--pixel-border),
-                0 -2px 0 0 var(--pixel-border),
-                0 2px 0 0 var(--pixel-border)
-              `;
-              e.currentTarget.style.backgroundColor = 'var(--pixel-dark)';
-            }}
+            } as React.CSSProperties}
           >
             <div
               className="pixel-font flex items-center justify-center"

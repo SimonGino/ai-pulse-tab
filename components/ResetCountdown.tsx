@@ -6,7 +6,7 @@ interface ResetCountdownProps {
 
 function formatCountdown(resetAt: string): string {
   const diff = new Date(resetAt).getTime() - Date.now();
-  if (diff <= 0) return '重置中...';
+  if (diff <= 0) return 'Resetting...';
 
   const days = Math.floor(diff / (1000 * 60 * 60 * 24));
   const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));

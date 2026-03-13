@@ -8,9 +8,9 @@ import { PROVIDERS } from '@/core/constants';
 function formatRelativeTime(ts: number): string {
   if (!ts) return '';
   const diff = Math.floor((Date.now() - ts) / 1000);
-  if (diff < 60) return '刚刚';
-  if (diff < 3600) return `${Math.floor(diff / 60)} 分钟前`;
-  return `${Math.floor(diff / 3600)} 小时前`;
+  if (diff < 60) return 'just now';
+  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+  return `${Math.floor(diff / 3600)}h ago`;
 }
 
 export default function App() {
@@ -71,7 +71,6 @@ export default function App() {
       {hasData && (
         <ProviderCard
           providerName={PROVIDERS.claude.name}
-          color={PROVIDERS.claude.color}
           usageDataList={claudeData}
         />
       )}
@@ -81,7 +80,7 @@ export default function App() {
       <div className="flex items-center gap-3 text-xs">
         {lastUpdated > 0 && (
           <span className="pixel-font" style={{ fontSize: '8px', color: 'var(--pixel-gray)' }}>
-            最后更新: {formatRelativeTime(lastUpdated)}
+            Last updated: {formatRelativeTime(lastUpdated)}
           </span>
         )}
         <button
