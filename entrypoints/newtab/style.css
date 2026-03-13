@@ -99,6 +99,23 @@
     0 2px 0 0 var(--hover-color) !important;
 }
 
+/* === Search Bar === */
+.search-bar-container {
+  margin-bottom: 24px;
+}
+
+.search-bar {
+  padding: 2px;
+}
+
+.search-engine-option:hover {
+  background: #2a2a4e !important;
+}
+
+.search-engine-btn:hover {
+  background: #2a2a4e !important;
+}
+
 /* === Dashboard Grid Layout === */
 .dashboard-grid {
   display: grid;
