@@ -21,11 +21,19 @@ export const PROVIDERS = {
   },
 } as const;
 
+export const SEARCH_ENGINES = [
+  { id: 'google', name: 'Google', urlTemplate: 'https://www.google.com/search?q={query}', icon: 'G' },
+  { id: 'bing', name: 'Bing', urlTemplate: 'https://www.bing.com/search?q={query}', icon: 'B' },
+  { id: 'duckduckgo', name: 'DuckDuckGo', urlTemplate: 'https://duckduckgo.com/?q={query}', icon: 'D' },
+  { id: 'perplexity', name: 'Perplexity', urlTemplate: 'https://www.perplexity.ai/search?q={query}', icon: 'P' },
+] as const;
+
 export const STORAGE_KEYS = {
   usageData: 'usageData',
   lastUpdated: 'lastUpdated',
   bookmarks: 'bookmarks',
   collapsedProviders: 'collapsedProviders',
+  preferredSearchEngine: 'preferredSearchEngine',
 } as const;
 
 export const BOOKMARK_COLORS = [

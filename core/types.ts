@@ -51,3 +51,12 @@ export interface Bookmark {
   color: string;
   order: number;
 }
+
+export type SearchEngineId = 'google' | 'bing' | 'duckduckgo' | 'perplexity';
+
+export interface SearchEngine {
+  id: SearchEngineId;
+  name: string;
+  urlTemplate: string;
+  icon: string;
+}

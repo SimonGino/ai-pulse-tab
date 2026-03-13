@@ -3,6 +3,7 @@ import { useUsageData } from '@/hooks/useUsageData';
 import { ProviderCard } from '@/components/ProviderCard';
 import { BookmarkGrid } from '@/components/BookmarkGrid';
 import { PacmanDecoration } from '@/components/PacmanDecoration';
+import { SearchBar } from '@/components/SearchBar';
 import { PROVIDERS } from '@/core/constants';
 
 function formatRelativeTime(ts: number): string {
@@ -41,6 +42,8 @@ export default function App() {
       >
         AI Pulse Tab
       </h1>
+
+      <SearchBar />
 
       <div className="dashboard-grid w-full" style={{ maxWidth: '1200px' }}>
         {/* Left column: Provider cards */}
