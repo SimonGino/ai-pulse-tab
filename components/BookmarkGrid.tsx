@@ -73,14 +73,11 @@ export function BookmarkGrid() {
     <div className="w-full">
       <h3
         className="pixel-font text-xs mb-3"
-        style={{ color: 'var(--pixel-pink)', fontSize: '9px' }}
+        style={{ color: 'var(--pixel-cyan)', fontSize: '9px' }}
       >
         BOOKMARKS
       </h3>
-      <div
-        className="grid gap-3"
-        style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))' }}
-      >
+      <div className="flex flex-wrap gap-3">
         {bookmarks.map((bookmark) => (
           <a
             key={bookmark.id}
@@ -91,6 +88,7 @@ export function BookmarkGrid() {
             onContextMenu={(e) => handleContextMenu(e, bookmark)}
             style={{
               '--hover-color': bookmark.color,
+              width: '80px',
               backgroundColor: 'var(--pixel-dark)',
               boxShadow: `
                 -2px 0 0 0 var(--pixel-border),
@@ -125,6 +123,7 @@ export function BookmarkGrid() {
           onClick={() => { setEditingBookmark(null); setModalOpen(true); }}
           className="flex flex-col items-center justify-center gap-2 p-3 cursor-pointer transition-all"
           style={{
+            width: '80px',
             backgroundColor: 'transparent',
             border: 'none',
             boxShadow: `
