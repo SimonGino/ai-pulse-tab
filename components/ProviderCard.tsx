@@ -1,7 +1,12 @@
+import type { ReactNode } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { updateCollapsedProvidersMap } from '@/core/bookmark-utils';
 import type { UsageData } from '@/core/types';
 import { STORAGE_KEYS } from '@/core/constants';
+import {
+  getOrgCardSectionContainerClassName,
+  getOrgCardSectionContentMarginTop,
+} from './provider-card-layout';
 import { QuotaBar } from './QuotaBar';
 import { ResetCountdown } from './ResetCountdown';
 
@@ -39,51 +44,68 @@ function OrgCard({ data, loginUrl }: { data: UsageData; loginUrl?: string }) {
     );
   }
 
-  return (
-    <div className="space-y-2">
-      {data.plan && (
-        <p className="pixel-font text-xs" style={{ color: 'var(--pixel-gray)' }}>
-          Plan: {data.plan}
-        </p>
-      )}
-      {data.warning && (
-        <p className="pixel-font text-xs" style={{ color: 'var(--pixel-red)' }}>
-          {data.warning}
-        </p>
-      )}
-      {data.session && (
-        <div>
-          <QuotaBar
-            used={data.session.used}
-            label={data.session.label ?? 'Session'}
-          />
-          {data.session.resetAt && (
-            <ResetCountdown resetAt={data.session.resetAt} />
-          )}
-        </div>
-      )}
-      {data.weekly && (
-        <div>
-          <QuotaBar
-            used={data.weekly.used}
-            label={data.weekly.label ?? 'Weekly'}
-          />
-          {data.weekly.resetAt && (
-            <ResetCountdown resetAt={data.weekly.resetAt} />
-          )}
-        </div>
-      )}
-      {data.models?.map((m) => (
+  const divider = (
+    <div style={{ height: '1px', backgroundColor: 'var(--pixel-border)', opacity: 0.5 }} />
+  );
+
+  const sections: ReactNode[] = [];
+
+  if (data.plan) {
+    sections.push(
+      <p key="plan" className="data-font text-xs" style={{ color: 'var(--pixel-gray)' }}>
+        Plan: {data.plan}
+      </p>
+    );
+  }
+  if (data.warning) {
+    sections.push(
+      <p key="warning" className="data-font text-xs" style={{ color: 'var(--pixel-red)' }}>
+        {data.warning}
+      </p>
+    );
+  }
+  if (data.session) {
+    sections.push(
+      <div key="session">
+        <QuotaBar used={data.session.used} label={data.session.label ?? 'Session'} />
+        {data.session.resetAt && <ResetCountdown resetAt={data.session.resetAt} />}
+      </div>
+    );
+  }
+  if (data.weekly) {
+    sections.push(
+      <div key="weekly">
+        <QuotaBar used={data.weekly.used} label={data.weekly.label ?? 'Weekly'} />
+        {data.weekly.resetAt && <ResetCountdown resetAt={data.weekly.resetAt} />}
+      </div>
+    );
+  }
+  if (data.models) {
+    for (const m of data.models) {
+      sections.push(
         <div key={m.model}>
           <QuotaBar used={m.used} label={m.model} tooltip={m.tooltip} />
           {m.resetAt && <ResetCountdown resetAt={m.resetAt} />}
         </div>
+      );
+    }
+  }
+  if (data.extra) {
+    sections.push(
+      <p key="extra" className="data-font text-xs" style={{ color: 'var(--pixel-gray)' }}>
+        Extra: ${data.extra.spent.toFixed(2)} / ${data.extra.limit.toFixed(2)}
+      </p>
+    );
+  }
+
+  return (
+    <div className={getOrgCardSectionContainerClassName()}>
+      {sections.map((section, i) => (
+        <div key={i}>
+          {i > 0 && divider}
+          <div style={{ marginTop: getOrgCardSectionContentMarginTop(i) }}>{section}</div>
+        </div>
       ))}
-      {data.extra && (
-        <p className="pixel-font text-xs" style={{ color: 'var(--pixel-gray)' }}>
-          Extra: ${data.extra.spent.toFixed(2)} / ${data.extra.limit.toFixed(2)}
-        </p>
-      )}
     </div>
   );
 }
@@ -109,7 +131,7 @@ export function ProviderCard({
   color,
 }: ProviderCardProps) {
   const isSingleOrg = usageDataList.length === 1;
-  const indicatorColor = color ?? 'var(--pixel-yellow)';
+  const indicatorColor = color ?? 'var(--pixel-cyan)';
   const [collapsed, setCollapsed] = useState(false);
   const collapsedRef = useRef(false);
   const persistQueueRef = useRef<Promise<void>>(Promise.resolve());
@@ -172,31 +194,42 @@ export function ProviderCard({
       style={{ backgroundColor: 'var(--pixel-dark)' }}
     >
       <div
-        className="flex items-center gap-2 cursor-pointer select-none"
+        className="flex items-center gap-2 select-none"
         style={{ marginBottom: collapsed ? 0 : '12px' }}
-        onClick={toggleCollapse}
       >
         <div
           className="w-3 h-3"
           style={{ backgroundColor: indicatorColor }}
         />
-        <h2
+        <a
+          href={loginUrl}
+          target="_blank"
+          rel="noopener noreferrer"
           className="pixel-font text-sm flex-1"
-          style={{ color: indicatorColor }}
+          style={{ color: indicatorColor, textDecoration: 'none' }}
+          onClick={(e) => e.stopPropagation()}
         >
           {providerName}
-        </h2>
+        </a>
         {collapsed && (
-          <span className="pixel-font" style={{ fontSize: '8px', color: 'var(--pixel-gray)' }}>
+          <span className="data-font" style={{ fontSize: '10px', color: 'var(--pixel-gray)' }}>
             Peak: {getHighestUsage(usageDataList)}
           </span>
         )}
-        <span
-          className="pixel-font"
-          style={{ fontSize: '10px', color: 'var(--pixel-gray)', lineHeight: 1 }}
+        <button
+          onClick={toggleCollapse}
+          className="pixel-font cursor-pointer"
+          style={{
+            fontSize: '10px',
+            color: 'var(--pixel-gray)',
+            lineHeight: 1,
+            background: 'none',
+            border: 'none',
+            padding: '4px 8px',
+          }}
         >
           {collapsed ? '▶' : '▼'}
-        </span>
+        </button>
       </div>
 
       {!collapsed && (
@@ -211,7 +244,7 @@ export function ProviderCard({
                 style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}
               >
                 <p
-                  className="pixel-font text-xs mb-2"
+                  className="data-font text-xs mb-2 font-medium"
                   style={{ color: 'var(--pixel-white)' }}
                 >
                   {data.orgName}

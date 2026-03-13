@@ -22,14 +22,14 @@ export function QuotaBar({ used, label, tooltip }: QuotaBarProps) {
   return (
     <div className="space-y-1">
       <div className="flex justify-between text-xs" style={{ color: 'var(--pixel-white)' }}>
-        <span className="pixel-font flex items-center gap-1" style={{ fontSize: '9px' }}>
+        <span className="data-font flex items-center gap-1" style={{ fontSize: '11px' }}>
           {label}
           {tooltip && (
             <span className="relative group cursor-help">
               <span
-                className="pixel-font inline-flex items-center justify-center w-3.5 h-3.5"
+                className="data-font inline-flex items-center justify-center w-3.5 h-3.5"
                 style={{
-                  fontSize: '8px',
+                  fontSize: '9px',
                   border: '1px solid var(--pixel-gray)',
                   color: 'var(--pixel-gray)',
                 }}
@@ -37,7 +37,7 @@ export function QuotaBar({ used, label, tooltip }: QuotaBarProps) {
                 ?
               </span>
               <span
-                className="absolute bottom-full left-0 mb-1.5 hidden group-hover:block w-80 px-3 py-2 text-xs leading-normal z-10"
+                className="absolute bottom-full left-0 mb-1.5 hidden group-hover:block w-80 px-3 py-2 text-xs leading-normal z-10 data-font"
                 style={{
                   backgroundColor: 'var(--pixel-dark)',
                   color: 'var(--pixel-white)',
@@ -49,17 +49,17 @@ export function QuotaBar({ used, label, tooltip }: QuotaBarProps) {
             </span>
           )}
         </span>
-        <span className="pixel-font" style={{ fontSize: '9px' }}>
+        <span className="data-font font-medium" style={{ fontSize: '11px' }}>
           {Math.round(pct)}%
         </span>
       </div>
-      <div className="flex gap-[2px]">
+      <div className="flex gap-[1px]">
         {Array.from({ length: TOTAL_BLOCKS }, (_, i) => (
           <div
             key={i}
             style={{
               width: '100%',
-              height: '8px',
+              height: '16px',
               backgroundColor:
                 i < filledBlocks ? color : 'var(--pixel-gray)',
               opacity: i < filledBlocks ? 1 : 0.3,

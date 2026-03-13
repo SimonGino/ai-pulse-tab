@@ -44,7 +44,7 @@ export function BookmarkModal({ bookmark, onSave, onClose }: BookmarkModalProps)
       >
         <h3
           className="pixel-font text-xs mb-4"
-          style={{ color: 'var(--pixel-yellow)' }}
+          style={{ color: 'var(--pixel-cyan)' }}
         >
           {bookmark ? 'EDIT BOOKMARK' : 'ADD BOOKMARK'}
         </h3>
@@ -188,7 +188,7 @@ export function BookmarkModal({ bookmark, onSave, onClose }: BookmarkModalProps)
                   border: 'none',
                   cursor: 'pointer',
                   boxShadow: color === c
-                    ? `0 0 0 2px var(--pixel-black), 0 0 0 4px var(--pixel-yellow)`
+                    ? `0 0 0 2px var(--pixel-black), 0 0 0 4px var(--pixel-cyan)`
                     : `0 0 0 2px var(--pixel-black)`,
                 }}
               />

@@ -33,24 +33,30 @@ export default function App() {
 
   return (
     <div
-      className="min-h-screen text-white flex flex-col items-center p-8"
+      className="min-h-screen text-white flex flex-col items-center px-8 py-4"
       style={{ backgroundColor: 'var(--pixel-black)' }}
     >
-      <h1
-        className="pixel-font text-lg mb-6"
-        style={{ color: 'var(--pixel-yellow)', letterSpacing: '2px' }}
-      >
-        AI Pulse Tab
-      </h1>
+      <div className="dashboard-content">
+        {/* Title - small label top-left */}
+        <div className="flex items-center">
+          <span
+            className="pixel-font"
+            style={{ fontSize: '8px', color: 'var(--pixel-cyan)', letterSpacing: '1px' }}
+          >
+            AI Pulse Tab
+          </span>
+        </div>
 
-      <SearchBar />
+        <SearchBar />
 
-      <div className="dashboard-grid w-full" style={{ maxWidth: '1200px' }}>
-        {/* Left column: Provider cards */}
-        <div className="dashboard-providers flex flex-col gap-4">
+        {/* Bookmarks - full width below search */}
+        <BookmarkGrid />
+
+        {/* Usage cards */}
+        <div>
           <h3
-            className="pixel-font text-xs"
-            style={{ color: 'var(--pixel-pink)', fontSize: '9px' }}
+            className="pixel-font text-xs mb-3"
+            style={{ color: 'var(--pixel-cyan)', fontSize: '9px' }}
           >
             USAGES
           </h3>
@@ -65,46 +71,44 @@ export default function App() {
             </div>
           )}
 
-          {claudeData.length > 0 && (
-            <ProviderCard
-              providerName={PROVIDERS.claude.name}
-              providerId={PROVIDERS.claude.id}
-              usageDataList={claudeData}
-              loginUrl={PROVIDERS.claude.baseUrl}
-              color={PROVIDERS.claude.color}
-            />
-          )}
+          <div className="providers-grid">
+            {claudeData.length > 0 && (
+              <ProviderCard
+                providerName={PROVIDERS.claude.name}
+                providerId={PROVIDERS.claude.id}
+                usageDataList={claudeData}
+                loginUrl={PROVIDERS.claude.baseUrl}
+                color={PROVIDERS.claude.color}
+              />
+            )}
 
-          {chatgptData.length > 0 && (
-            <ProviderCard
-              providerName={PROVIDERS.chatgpt.name}
-              providerId={PROVIDERS.chatgpt.id}
-              usageDataList={chatgptData}
-              loginUrl={PROVIDERS.chatgpt.baseUrl}
-              color={PROVIDERS.chatgpt.color}
-            />
-          )}
+            {chatgptData.length > 0 && (
+              <ProviderCard
+                providerName={PROVIDERS.chatgpt.name}
+                providerId={PROVIDERS.chatgpt.id}
+                usageDataList={chatgptData}
+                loginUrl={PROVIDERS.chatgpt.baseUrl}
+                color={PROVIDERS.chatgpt.color}
+              />
+            )}
+          </div>
         </div>
 
-        {/* Right column: Bookmarks */}
-        <div className="dashboard-bookmarks">
-          <BookmarkGrid />
+        {/* Footer */}
+        <div className="flex items-center gap-3">
+          <button
+            onClick={handleRefresh}
+            disabled={refreshing}
+            className="pixel-btn"
+          >
+            {refreshing ? 'LOADING...' : 'REFRESH'}
+          </button>
+          {lastUpdated > 0 && (
+            <span className="data-font" style={{ fontSize: '10px', color: 'var(--pixel-reset-text)' }}>
+              updated {formatRelativeTime(lastUpdated)}
+            </span>
+          )}
         </div>
-      </div>
-
-      <div className="flex items-center gap-3 text-xs mt-6">
-        {lastUpdated > 0 && (
-          <span className="pixel-font" style={{ fontSize: '8px', color: 'var(--pixel-gray)' }}>
-            Last updated: {formatRelativeTime(lastUpdated)}
-          </span>
-        )}
-        <button
-          onClick={handleRefresh}
-          disabled={refreshing}
-          className="pixel-btn"
-        >
-          {refreshing ? 'LOADING...' : 'REFRESH'}
-        </button>
       </div>
 
       <PacmanDecoration />

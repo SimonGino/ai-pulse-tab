@@ -30,8 +30,8 @@ export function ResetCountdown({ resetAt }: ResetCountdownProps) {
 
   return (
     <span
-      className="pixel-font"
-      style={{ fontSize: '8px', color: 'var(--pixel-cyan)' }}
+      className="data-font"
+      style={{ fontSize: '10px', color: 'var(--pixel-reset-text)' }}
     >
       RESET: {text}
     </span>
