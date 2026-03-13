@@ -16,7 +16,7 @@ const OrganizationsResponseSchema = z.array(OrganizationSchema);
 const QuotaWindowSchema = z
   .object({
     utilization: z.number(),
-    resets_at: z.string(),
+    resets_at: z.string().nullable().optional(),
   })
   .nullable();
 
@@ -45,6 +45,40 @@ const UsageResponseSchema = z
 // --- ClaudeProbe ---
 
 const BASE_URL = PROVIDERS.claude.baseUrl;
+
+type QuotaWindow = NonNullable<z.infer<typeof QuotaWindowSchema>>;
+
+function normalizeQuotaWindow(
+  quota: QuotaWindow | null | undefined,
+  label: string,
+): UsageData['session'] | undefined {
+  if (!quota) {
+    return undefined;
+  }
+
+  return {
+    used: quota.utilization / 100,
+    label,
+    ...(quota.resets_at ? { resetAt: quota.resets_at } : {}),
+  };
+}
+
+function normalizeModelUsage(
+  quota: QuotaWindow | null | undefined,
+  model: string,
+  tooltip: string,
+) {
+  if (!quota) {
+    return null;
+  }
+
+  return {
+    model,
+    used: quota.utilization / 100,
+    tooltip,
+    ...(quota.resets_at ? { resetAt: quota.resets_at } : {}),
+  };
+}
 
 export const claudeProbe: UsageProbe = {
   id: PROVIDERS.claude.id,
@@ -94,42 +128,24 @@ export const claudeProbe: UsageProbe = {
           },
         };
 
-        if (usage.five_hour) {
-          data.session = {
-            used: usage.five_hour.utilization / 100,
-            resetAt: usage.five_hour.resets_at,
-            label: 'Session (5h)',
-          };
-        }
-
-        if (usage.seven_day) {
-          data.weekly = {
-            used: usage.seven_day.utilization / 100,
-            resetAt: usage.seven_day.resets_at,
-            label: 'Weekly',
-          };
-        }
+        data.session = normalizeQuotaWindow(usage.five_hour, 'Session (5h)');
+        data.weekly = normalizeQuotaWindow(usage.seven_day, 'Weekly');
 
         // Per-model usage
         const models: UsageData['models'] = [];
-        if (usage.seven_day_sonnet) {
-          models.push({
-            model: 'Sonnet only',
-            used: usage.seven_day_sonnet.utilization / 100,
-            resetAt: usage.seven_day_sonnet.resets_at,
-            tooltip:
-              'Your Sonnet usage counts toward this limit, as well as your weekly and 5-hour session limits',
-          });
-        }
-        if (usage.seven_day_opus) {
-          models.push({
-            model: 'Opus only',
-            used: usage.seven_day_opus.utilization / 100,
-            resetAt: usage.seven_day_opus.resets_at,
-            tooltip:
-              'Your Opus usage counts toward this limit, as well as your weekly and 5-hour session limits',
-          });
-        }
+        const sonnetUsage = normalizeModelUsage(
+          usage.seven_day_sonnet,
+          'Sonnet only',
+          'Your Sonnet usage counts toward this limit, as well as your weekly and 5-hour session limits',
+        );
+        if (sonnetUsage) models.push(sonnetUsage);
+
+        const opusUsage = normalizeModelUsage(
+          usage.seven_day_opus,
+          'Opus only',
+          'Your Opus usage counts toward this limit, as well as your weekly and 5-hour session limits',
+        );
+        if (opusUsage) models.push(opusUsage);
         if (models.length > 0) {
           data.models = models;
         }

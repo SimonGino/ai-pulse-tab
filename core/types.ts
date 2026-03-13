@@ -31,7 +31,7 @@ export interface UsageData {
 
 export interface QuotaWindow {
   used: number; // 0-1
-  resetAt: string; // ISO string
+  resetAt?: string; // ISO string, omitted when provider does not return it
   label?: string;
 }
 
