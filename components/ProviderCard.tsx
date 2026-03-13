@@ -42,6 +42,11 @@ function OrgCard({ data, loginUrl }: { data: UsageData; loginUrl?: string }) {
           Plan: {data.plan}
         </p>
       )}
+      {data.warning && (
+        <p className="pixel-font text-xs" style={{ color: 'var(--pixel-red)' }}>
+          {data.warning}
+        </p>
+      )}
       {data.session && (
         <div>
           <QuotaBar

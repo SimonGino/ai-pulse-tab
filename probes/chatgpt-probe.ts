@@ -29,9 +29,9 @@ const AccountsCheckSchema = z.object({
 // --- wham/usage API schemas ---
 
 const WindowSnapshotSchema = z.object({
-  used_percent: z.number(),
-  reset_at: z.number(),
-  limit_window_seconds: z.number(),
+  used_percent: z.number().optional(),
+  reset_at: z.number().optional(),
+  limit_window_seconds: z.number().optional(),
 }).nullable().optional();
 
 const RateLimitSchema = z.object({
@@ -133,7 +133,15 @@ async function fetchWhamUsage(token: string, accountId?: string) {
   );
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const json = await res.json();
-  return WhamUsageSchema.parse(json);
+  console.log('[ChatGPTProbe] raw wham/usage response:', JSON.stringify(json));
+  const parsed = WhamUsageSchema.safeParse(json);
+  if (!parsed.success) {
+    console.error('[ChatGPTProbe] wham/usage schema mismatch:', parsed.error.issues);
+    console.error('[ChatGPTProbe] raw keys:', Object.keys(json));
+    // Return raw json wrapped loosely so caller can still attempt extraction
+    return json as z.infer<typeof WhamUsageSchema>;
+  }
+  return parsed.data;
 }
 
 // --- ChatGPT Probe ---
@@ -198,31 +206,47 @@ export const chatgptProbe: UsageProbe = {
         plan: capitalizeFirst(planType),
       };
 
+      // Detect deactivated workspace: paid plan but no active subscription
+      const hasActiveSub = entry.entitlement?.has_active_subscription;
+      if (planType !== 'free' && hasActiveSub === false) {
+        data.warning = 'Workspace deactivated';
+      }
+
       // Only fetch wham/usage for paid plans — free accounts have no server-side rate limit data
-      if (planType !== 'free') {
+      if (planType !== 'free' && hasActiveSub !== false) {
         try {
           const whamData = await fetchWhamUsage(token, accountId);
-          console.log('[ChatGPTProbe] wham/usage for', accountId, ':', JSON.stringify(whamData));
 
+          // Try rate_limit at top level (known structure)
           const rateLimit = whamData?.rate_limit;
           if (rateLimit?.primary_window) {
             const w = rateLimit.primary_window;
-            data.session = {
-              used: w.used_percent / 100,
-              label: formatWindowLabel(w.limit_window_seconds),
-              resetAt: new Date(w.reset_at * 1000).toISOString(),
-            };
+            if (w.used_percent != null) {
+              data.session = {
+                used: w.used_percent / 100,
+                label: w.limit_window_seconds ? formatWindowLabel(w.limit_window_seconds) : 'Session',
+                resetAt: w.reset_at ? new Date(w.reset_at * 1000).toISOString() : undefined,
+              };
+            }
           }
           if (rateLimit?.secondary_window) {
             const w = rateLimit.secondary_window;
-            data.weekly = {
-              used: w.used_percent / 100,
-              label: formatWindowLabel(w.limit_window_seconds),
-              resetAt: new Date(w.reset_at * 1000).toISOString(),
-            };
+            if (w.used_percent != null) {
+              data.weekly = {
+                used: w.used_percent / 100,
+                label: w.limit_window_seconds ? formatWindowLabel(w.limit_window_seconds) : 'Weekly',
+                resetAt: w.reset_at ? new Date(w.reset_at * 1000).toISOString() : undefined,
+              };
+            }
+          }
+
+          // If no rate_limit found, log the full response structure for debugging
+          if (!rateLimit) {
+            console.warn('[ChatGPTProbe] No rate_limit in wham/usage. Response keys:', Object.keys(whamData ?? {}));
           }
         } catch (err) {
           console.warn('[ChatGPTProbe] wham/usage failed for', accountId, err);
+          data.warning = data.warning ?? 'Usage data unavailable';
         }
       }
 
