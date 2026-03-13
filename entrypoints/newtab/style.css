@@ -14,6 +14,7 @@
   --pixel-white: #e0e0e0;
   --pixel-gray: #555555;
   --pixel-border: #3a3a5c;
+  --pixel-hover-bg: #2a2a4e;
 }
 
 /* === Pixel Font Family === */
@@ -72,7 +73,7 @@
 }
 
 .pixel-btn:hover:not(:disabled) {
-  background: #2a2a4e;
+  background: var(--pixel-hover-bg);
   box-shadow:
     -2px 0 0 0 var(--pixel-yellow),
     2px 0 0 0 var(--pixel-yellow),
@@ -91,7 +92,7 @@
 }
 
 .quick-link-card:hover {
-  background-color: #2a2a4e !important;
+  background-color: var(--pixel-hover-bg) !important;
   box-shadow:
     -2px 0 0 0 var(--hover-color),
     2px 0 0 0 var(--hover-color),
@@ -102,18 +103,101 @@
 /* === Search Bar === */
 .search-bar-container {
   margin-bottom: 24px;
+  max-width: 1200px;
 }
 
 .search-bar {
   padding: 2px;
+  background: var(--pixel-dark);
+  display: flex;
+  align-items: center;
+  position: relative;
 }
 
-.search-engine-option:hover {
-  background: #2a2a4e !important;
+.search-engine-selector {
+  position: relative;
 }
 
+.search-engine-btn {
+  background: transparent;
+  border: none;
+  color: var(--pixel-yellow);
+  cursor: pointer;
+  padding: 8px 12px;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.search-engine-label {
+  font-size: 8px;
+  color: var(--pixel-white);
+}
+
+.search-engine-caret {
+  font-size: 6px;
+  color: var(--pixel-gray);
+}
+
+.search-engine-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 8px;
+  background: var(--pixel-dark);
+  z-index: 50;
+  min-width: 140px;
+}
+
+.search-engine-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 12px;
+  background: transparent;
+  border: none;
+  color: var(--pixel-white);
+  cursor: pointer;
+  font-size: 8px;
+  text-align: left;
+}
+
+.search-engine-option-active {
+  background: var(--pixel-hover-bg);
+  color: var(--pixel-yellow);
+}
+
+.search-engine-option-icon {
+  color: var(--pixel-yellow);
+}
+
+.search-bar-divider {
+  width: 2px;
+  height: 20px;
+  background: var(--pixel-border);
+}
+
+.search-bar-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--pixel-white);
+  padding: 10px 12px;
+  font-size: 10px;
+  min-width: 0;
+}
+
+.search-bar-input::placeholder {
+  color: var(--pixel-gray);
+}
+
+.search-engine-option:hover,
 .search-engine-btn:hover {
-  background: #2a2a4e !important;
+  background: var(--pixel-hover-bg);
 }
 
 /* === Dashboard Grid Layout === */

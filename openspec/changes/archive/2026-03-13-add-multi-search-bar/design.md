@@ -2,13 +2,13 @@
 
 AI Pulse Tab 是一个浏览器新标签页扩展，当前布局为：标题 → 双列内容区（左侧 Provider 用量卡片 + 右侧书签）→ 底部刷新工具栏 → Pac-Man 装饰。使用 React 19 + TailwindCSS 4 + WXT 构建，所有状态存储在 `chrome.storage.local`。
 
-用户希望在新标签页增加一个搜索栏，默认使用 Google 搜索，并可快速切换到 Claude、ChatGPT、Gemini 等 AI 平台。
+用户希望在新标签页增加一个搜索栏，默认使用 Google 搜索，并可快速切换到 Bing、DuckDuckGo、Perplexity 等通用搜索引擎。
 
 ## Goals / Non-Goals
 
 **Goals:**
 - 在标题下方、内容区上方插入搜索栏，用户可直接输入关键词发起搜索
-- 支持 Google、Claude、ChatGPT、Gemini 四个搜索引擎切换
+- 支持 Google、Bing、DuckDuckGo、Perplexity 四个搜索引擎切换
 - 用户的引擎偏好持久化到 `chrome.storage.local`
 - 搜索栏风格与现有像素主题一致
 
@@ -38,15 +38,15 @@ AI Pulse Tab 是一个浏览器新标签页扩展，当前布局为：标题 →
 
 用户按下 Enter 后，通过 `window.open(url, '_blank')` 在新标签页打开搜索结果。这样用户可以保留 AI Pulse Tab 继续使用。
 
-对于 AI 平台（Claude、ChatGPT、Gemini），跳转 URL 使用各平台支持的查询参数：
+对于其他搜索引擎，跳转 URL 使用各平台支持的查询参数：
 - Google: `https://www.google.com/search?q={query}`
-- Claude: `https://claude.ai/new?q={query}`
-- ChatGPT: `https://chatgpt.com/?q={query}`
-- Gemini: `https://gemini.google.com/app?q={query}`
+- Bing: `https://www.bing.com/search?q={query}`
+- DuckDuckGo: `https://duckduckgo.com/?q={query}`
+- Perplexity: `https://www.perplexity.ai/search?q={query}`
 
 ### 4. 偏好持久化：chrome.storage.local
 
-新增存储键 `preferredSearchEngine`，值为引擎 ID 字符串（`'google' | 'claude' | 'chatgpt' | 'gemini'`）。默认值为 `'google'`。
+新增存储键 `preferredSearchEngine`，值为引擎 ID 字符串（`'google' | 'bing' | 'duckduckgo' | 'perplexity'`）。默认值为 `'google'`。
 
 使用与现有 `useBookmarks` hook 类似的模式，创建 `useSearchEngine` hook 管理引擎选择状态和持久化。
 
@@ -67,6 +67,6 @@ SearchBar.tsx
 
 ## Risks / Trade-offs
 
-- **[AI 平台 URL 参数变更]** → Claude/ChatGPT/Gemini 的查询参数格式可能随时变化。缓解：将 URL 模板集中定义在常量文件中，便于快速更新。
+- **[搜索引擎 URL 参数变更]** → Bing/DuckDuckGo/Perplexity 的查询参数格式可能随时变化。缓解：将 URL 模板集中定义在常量文件中，便于快速更新。
 - **[搜索栏抢占视觉焦点]** → 搜索栏可能比用量数据更醒目，改变产品定位感。缓解：保持搜索栏尺寸克制，不使用过于抢眼的颜色，让它融入而非主导。
 - **[垂直空间增加]** → 新增搜索栏会推挤下方内容。缓解：搜索栏高度控制在 40-50px 内，加上间距不超过 70px 的垂直空间占用。

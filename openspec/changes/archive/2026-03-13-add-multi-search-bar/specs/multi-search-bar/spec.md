@@ -7,17 +7,17 @@
 - **WHEN** 当前引擎为 Google，用户输入 "hello world" 并按 Enter
 - **THEN** 在新标签页打开 `https://www.google.com/search?q=hello%20world`
 
-#### Scenario: Claude 搜索跳转
-- **WHEN** 当前引擎为 Claude，用户输入 "explain recursion" 并按 Enter
-- **THEN** 在新标签页打开 `https://claude.ai/new?q=explain%20recursion`
+#### Scenario: Bing 搜索跳转
+- **WHEN** 当前引擎为 Bing，用户输入 "explain recursion" 并按 Enter
+- **THEN** 在新标签页打开 `https://www.bing.com/search?q=explain%20recursion`
 
-#### Scenario: ChatGPT 搜索跳转
-- **WHEN** 当前引擎为 ChatGPT，用户输入 "what is React" 并按 Enter
-- **THEN** 在新标签页打开 `https://chatgpt.com/?q=what%20is%20React`
+#### Scenario: DuckDuckGo 搜索跳转
+- **WHEN** 当前引擎为 DuckDuckGo，用户输入 "what is React" 并按 Enter
+- **THEN** 在新标签页打开 `https://duckduckgo.com/?q=what%20is%20React`
 
-#### Scenario: Gemini 搜索跳转
-- **WHEN** 当前引擎为 Gemini，用户输入 "summarize this" 并按 Enter
-- **THEN** 在新标签页打开 `https://gemini.google.com/app?q=summarize%20this`
+#### Scenario: Perplexity 搜索跳转
+- **WHEN** 当前引擎为 Perplexity，用户输入 "summarize this" 并按 Enter
+- **THEN** 在新标签页打开 `https://www.perplexity.ai/search?q=summarize%20this`
 
 #### Scenario: 空输入不跳转
 - **WHEN** 用户在输入框为空或仅包含空白字符时按 Enter
@@ -28,7 +28,7 @@
 - **THEN** 搜索输入框自动获取键盘焦点
 
 ### Requirement: 引擎切换
-搜索栏 SHALL 支持在 Google、Claude、ChatGPT、Gemini 四个引擎之间切换。当前选中的引擎 SHALL 通过图标或标识清晰展示。
+搜索栏 SHALL 支持在 Google、Bing、DuckDuckGo、Perplexity 四个引擎之间切换。当前选中的引擎 SHALL 通过图标或标识清晰展示。
 
 #### Scenario: 查看当前引擎
 - **WHEN** 用户打开新标签页
@@ -36,11 +36,11 @@
 
 #### Scenario: 打开引擎选择器
 - **WHEN** 用户点击搜索栏左侧的引擎图标/标识
-- **THEN** 显示下拉菜单列出所有可用引擎：Google、Claude、ChatGPT、Gemini
+- **THEN** 显示下拉菜单列出所有可用引擎：Google、Bing、DuckDuckGo、Perplexity
 
 #### Scenario: 切换引擎
-- **WHEN** 用户在下拉菜单中点击 "Claude"
-- **THEN** 当前引擎切换为 Claude，下拉菜单关闭，搜索栏左侧更新为 Claude 的图标/标识
+- **WHEN** 用户在下拉菜单中点击 "DuckDuckGo"
+- **THEN** 当前引擎切换为 DuckDuckGo，下拉菜单关闭，搜索栏左侧更新为 DuckDuckGo 的图标/标识
 
 #### Scenario: 点击外部关闭下拉菜单
 - **WHEN** 引擎选择下拉菜单处于打开状态，用户点击菜单外部区域
@@ -54,8 +54,8 @@
 - **THEN** 搜索栏默认引擎为 Google
 
 #### Scenario: 偏好跨会话保持
-- **WHEN** 用户将引擎切换为 Gemini，然后关闭标签页
-- **THEN** 重新打开新标签页时，搜索栏引擎仍为 Gemini
+- **WHEN** 用户将引擎切换为 Perplexity，然后关闭标签页
+- **THEN** 重新打开新标签页时，搜索栏引擎仍为 Perplexity
 
 ### Requirement: 像素风格搜索栏
 搜索栏 SHALL 遵循应用的像素艺术主题，使用像素字体、像素风格边框（box-shadow）和主题色彩变量。

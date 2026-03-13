@@ -46,65 +46,29 @@ export function SearchBar() {
   };
 
   return (
-    <div className="search-bar-container w-full" style={{ maxWidth: '1200px' }}>
-      <div className="search-bar pixel-border" style={{ background: 'var(--pixel-dark)', display: 'flex', alignItems: 'center', position: 'relative' }}>
+    <div className="search-bar-container w-full">
+      <div className="search-bar pixel-border">
         {/* Engine selector */}
-        <div ref={dropdownRef} style={{ position: 'relative' }}>
+        <div ref={dropdownRef} className="search-engine-selector">
           <button
             className="search-engine-btn pixel-font"
             onClick={() => setDropdownOpen((prev) => !prev)}
-            style={{
-              background: 'transparent',
-              border: 'none',
-              color: 'var(--pixel-yellow)',
-              cursor: 'pointer',
-              padding: '8px 12px',
-              fontSize: '10px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px',
-              whiteSpace: 'nowrap',
-            }}
           >
             <span>{engine.icon}</span>
-            <span style={{ fontSize: '8px', color: 'var(--pixel-white)' }}>{engine.name}</span>
-            <span style={{ fontSize: '6px', color: 'var(--pixel-gray)' }}>▼</span>
+            <span className="search-engine-label">{engine.name}</span>
+            <span className="search-engine-caret">▼</span>
           </button>
 
           {/* Dropdown menu */}
           {dropdownOpen && (
-            <div
-              className="search-engine-dropdown pixel-border"
-              style={{
-                position: 'absolute',
-                top: '100%',
-                left: '0',
-                marginTop: '8px',
-                background: 'var(--pixel-dark)',
-                zIndex: 50,
-                minWidth: '140px',
-              }}
-            >
+            <div className="search-engine-dropdown pixel-border">
               {SEARCH_ENGINES.map((e) => (
                 <button
                   key={e.id}
-                  className="search-engine-option pixel-font"
-                  onClick={() => handleSelectEngine(e.id as SearchEngineId)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    width: '100%',
-                    padding: '8px 12px',
-                    background: e.id === engine.id ? '#2a2a4e' : 'transparent',
-                    border: 'none',
-                    color: e.id === engine.id ? 'var(--pixel-yellow)' : 'var(--pixel-white)',
-                    cursor: 'pointer',
-                    fontSize: '8px',
-                    textAlign: 'left',
-                  }}
+                  className={`search-engine-option pixel-font${e.id === engine.id ? ' search-engine-option-active' : ''}`}
+                  onClick={() => handleSelectEngine(e.id)}
                 >
-                  <span style={{ color: 'var(--pixel-yellow)' }}>{e.icon}</span>
+                  <span className="search-engine-option-icon">{e.icon}</span>
                   <span>{e.name}</span>
                 </button>
               ))}
@@ -113,7 +77,7 @@ export function SearchBar() {
         </div>
 
         {/* Divider */}
-        <div style={{ width: '2px', height: '20px', background: 'var(--pixel-border)' }} />
+        <div className="search-bar-divider" />
 
         {/* Search input */}
         <input
@@ -123,17 +87,7 @@ export function SearchBar() {
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder={`Search with ${engine.name}...`}
-          className="pixel-font"
-          style={{
-            flex: 1,
-            background: 'transparent',
-            border: 'none',
-            outline: 'none',
-            color: 'var(--pixel-white)',
-            padding: '10px 12px',
-            fontSize: '10px',
-            minWidth: 0,
-          }}
+          className="search-bar-input pixel-font"
         />
       </div>
     </div>
