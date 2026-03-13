@@ -6,7 +6,7 @@ interface ResetCountdownProps {
 
 function formatCountdown(resetAt: string): string {
   const diff = new Date(resetAt).getTime() - Date.now();
-  if (diff <= 0) return '重置中...';
+  if (diff <= 0) return 'Resetting...';
 
   const days = Math.floor(diff / (1000 * 60 * 60 * 24));
   const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -28,5 +28,12 @@ export function ResetCountdown({ resetAt }: ResetCountdownProps) {
     return () => clearInterval(timer);
   }, [resetAt]);
 
-  return <span className="text-xs text-gray-500">重置: {text}</span>;
+  return (
+    <span
+      className="pixel-font"
+      style={{ fontSize: '8px', color: 'var(--pixel-cyan)' }}
+    >
+      RESET: {text}
+    </span>
+  );
 }
