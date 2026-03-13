@@ -3,6 +3,10 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { updateCollapsedProvidersMap } from '@/core/bookmark-utils';
 import type { UsageData } from '@/core/types';
 import { STORAGE_KEYS } from '@/core/constants';
+import {
+  getOrgCardSectionContainerClassName,
+  getOrgCardSectionContentMarginTop,
+} from './provider-card-layout';
 import { QuotaBar } from './QuotaBar';
 import { ResetCountdown } from './ResetCountdown';
 
@@ -95,11 +99,11 @@ function OrgCard({ data, loginUrl }: { data: UsageData; loginUrl?: string }) {
   }
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className={getOrgCardSectionContainerClassName()}>
       {sections.map((section, i) => (
         <div key={i}>
           {i > 0 && divider}
-          <div style={{ marginTop: i > 0 ? '12px' : 0 }}>{section}</div>
+          <div style={{ marginTop: getOrgCardSectionContentMarginTop(i) }}>{section}</div>
         </div>
       ))}
     </div>
