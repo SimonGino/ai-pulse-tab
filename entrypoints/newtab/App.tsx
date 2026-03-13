@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useUsageData } from '@/hooks/useUsageData';
 import { ProviderCard } from '@/components/ProviderCard';
-import { QuickLinks } from '@/components/QuickLinks';
+import { BookmarkGrid } from '@/components/BookmarkGrid';
 import { PacmanDecoration } from '@/components/PacmanDecoration';
 import { PROVIDERS } from '@/core/constants';
 
@@ -22,7 +22,6 @@ export default function App() {
     try {
       await refresh();
     } finally {
-      // Give storage a moment to update, then clear loading
       setTimeout(() => setRefreshing(false), 1500);
     }
   };
@@ -33,48 +32,64 @@ export default function App() {
 
   return (
     <div
-      className="min-h-screen text-white flex flex-col items-center justify-center p-8 gap-6"
+      className="min-h-screen text-white flex flex-col items-center p-8"
       style={{ backgroundColor: 'var(--pixel-black)' }}
     >
       <h1
-        className="pixel-font text-lg"
+        className="pixel-font text-lg mb-6"
         style={{ color: 'var(--pixel-yellow)', letterSpacing: '2px' }}
       >
         AI Pulse Tab
       </h1>
 
-      {!hasAnyData && (
-        <div className="text-center space-y-2">
-          <p className="pixel-font text-xs" style={{ color: 'var(--pixel-white)' }}>
-            NOT LOGGED IN
-          </p>
-          <p className="pixel-font text-xs" style={{ color: 'var(--pixel-gray)' }}>
-            Login to your AI providers to see usage
-          </p>
+      <div className="dashboard-grid w-full" style={{ maxWidth: '1200px' }}>
+        {/* Left column: Provider cards */}
+        <div className="dashboard-providers flex flex-col gap-4">
+          <h3
+            className="pixel-font text-xs"
+            style={{ color: 'var(--pixel-pink)', fontSize: '9px' }}
+          >
+            USAGES
+          </h3>
+          {!hasAnyData && (
+            <div className="text-center space-y-2">
+              <p className="pixel-font text-xs" style={{ color: 'var(--pixel-white)' }}>
+                NOT LOGGED IN
+              </p>
+              <p className="pixel-font text-xs" style={{ color: 'var(--pixel-gray)' }}>
+                Login to your AI providers to see usage
+              </p>
+            </div>
+          )}
+
+          {claudeData.length > 0 && (
+            <ProviderCard
+              providerName={PROVIDERS.claude.name}
+              providerId={PROVIDERS.claude.id}
+              usageDataList={claudeData}
+              loginUrl={PROVIDERS.claude.baseUrl}
+              color={PROVIDERS.claude.color}
+            />
+          )}
+
+          {chatgptData.length > 0 && (
+            <ProviderCard
+              providerName={PROVIDERS.chatgpt.name}
+              providerId={PROVIDERS.chatgpt.id}
+              usageDataList={chatgptData}
+              loginUrl={PROVIDERS.chatgpt.baseUrl}
+              color={PROVIDERS.chatgpt.color}
+            />
+          )}
         </div>
-      )}
 
-      {claudeData.length > 0 && (
-        <ProviderCard
-          providerName={PROVIDERS.claude.name}
-          usageDataList={claudeData}
-          loginUrl={PROVIDERS.claude.baseUrl}
-          color={PROVIDERS.claude.color}
-        />
-      )}
+        {/* Right column: Bookmarks */}
+        <div className="dashboard-bookmarks">
+          <BookmarkGrid />
+        </div>
+      </div>
 
-      {chatgptData.length > 0 && (
-        <ProviderCard
-          providerName={PROVIDERS.chatgpt.name}
-          usageDataList={chatgptData}
-          loginUrl={PROVIDERS.chatgpt.baseUrl}
-          color={PROVIDERS.chatgpt.color}
-        />
-      )}
-
-      <QuickLinks />
-
-      <div className="flex items-center gap-3 text-xs">
+      <div className="flex items-center gap-3 text-xs mt-6">
         {lastUpdated > 0 && (
           <span className="pixel-font" style={{ fontSize: '8px', color: 'var(--pixel-gray)' }}>
             Last updated: {formatRelativeTime(lastUpdated)}
