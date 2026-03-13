@@ -13,6 +13,12 @@ export const PROVIDERS = {
     color: '#D97706',
     baseUrl: 'https://claude.ai',
   },
+  chatgpt: {
+    id: 'chatgpt',
+    name: 'ChatGPT',
+    color: '#10A37F',
+    baseUrl: 'https://chatgpt.com',
+  },
 } as const;
 
 export const STORAGE_KEYS = {

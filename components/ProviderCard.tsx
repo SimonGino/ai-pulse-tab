@@ -5,10 +5,13 @@ import { ResetCountdown } from './ResetCountdown';
 interface ProviderCardProps {
   providerName: string;
   usageDataList: UsageData[];
+  loginUrl?: string;
+  color?: string;
 }
 
-function OrgCard({ data }: { data: UsageData }) {
+function OrgCard({ data, loginUrl }: { data: UsageData; loginUrl?: string }) {
   if (data.authStatus.status !== 'authenticated') {
+    const url = loginUrl ?? 'https://claude.ai';
     return (
       <div
         className="p-3"
@@ -16,11 +19,11 @@ function OrgCard({ data }: { data: UsageData }) {
       >
         <p className="text-sm" style={{ color: 'var(--pixel-white)' }}>
           {data.authStatus.status === 'expired'
-            ? 'Please re-login to claude.ai'
-            : 'Please login to claude.ai'}
+            ? `Please re-login to ${url}`
+            : `Please login to ${url}`}
         </p>
         <a
-          href="https://claude.ai"
+          href={url}
           target="_blank"
           rel="noopener noreferrer"
           className="pixel-font text-xs mt-1 inline-block"
@@ -34,6 +37,11 @@ function OrgCard({ data }: { data: UsageData }) {
 
   return (
     <div className="space-y-2">
+      {data.plan && (
+        <p className="pixel-font text-xs" style={{ color: 'var(--pixel-gray)' }}>
+          Plan: {data.plan}
+        </p>
+      )}
       {data.session && (
         <div>
           <QuotaBar
@@ -74,8 +82,11 @@ function OrgCard({ data }: { data: UsageData }) {
 export function ProviderCard({
   providerName,
   usageDataList,
+  loginUrl,
+  color,
 }: ProviderCardProps) {
   const isSingleOrg = usageDataList.length === 1;
+  const indicatorColor = color ?? 'var(--pixel-yellow)';
 
   return (
     <div
@@ -85,18 +96,18 @@ export function ProviderCard({
       <div className="flex items-center gap-2 mb-3">
         <div
           className="w-3 h-3"
-          style={{ backgroundColor: 'var(--pixel-yellow)' }}
+          style={{ backgroundColor: indicatorColor }}
         />
         <h2
           className="pixel-font text-sm"
-          style={{ color: 'var(--pixel-yellow)' }}
+          style={{ color: indicatorColor }}
         >
           {providerName}
         </h2>
       </div>
 
       {isSingleOrg ? (
-        <OrgCard data={usageDataList[0]} />
+        <OrgCard data={usageDataList[0]} loginUrl={loginUrl} />
       ) : (
         <div className="space-y-3">
           {usageDataList.map((data) => (
@@ -111,7 +122,7 @@ export function ProviderCard({
               >
                 {data.orgName}
               </p>
-              <OrgCard data={data} />
+              <OrgCard data={data} loginUrl={loginUrl} />
             </div>
           ))}
         </div>

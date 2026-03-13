@@ -42,6 +42,38 @@ const UsageResponseSchema = z
   })
   .passthrough();
 
+// --- Account info schema (for plan detection) ---
+
+const MembershipOrgSchema = z.object({
+  uuid: z.string().optional(),
+  rate_limit_tier: z.string().nullable().optional(),
+  billing_type: z.string().nullable().optional(),
+}).passthrough();
+
+const MembershipSchema = z.object({
+  organization: MembershipOrgSchema,
+}).passthrough();
+
+const AccountResponseSchema = z.object({
+  memberships: z.array(MembershipSchema).optional(),
+}).passthrough();
+
+function inferPlan(rateLimitTier: string | null | undefined, billingType: string | null | undefined): string | undefined {
+  const tier = (rateLimitTier ?? '').toLowerCase();
+  const billing = (billingType ?? '').toLowerCase();
+  if (tier.includes('max')) {
+    // Extract multiplier: "default_claude_max_5x" → "Max 5x"
+    const match = tier.match(/max_(\d+x)/);
+    return match ? `Max ${match[1]}` : 'Max';
+  }
+  if (tier.includes('pro')) return 'Pro';
+  if (tier.includes('team')) return 'Team';
+  if (tier.includes('enterprise')) return 'Enterprise';
+  if (billing.includes('stripe') && tier.includes('claude')) return 'Pro';
+  if (tier.includes('free') || tier === '') return 'Free';
+  return undefined;
+}
+
 // --- ClaudeProbe ---
 
 const BASE_URL = PROVIDERS.claude.baseUrl;
@@ -111,6 +143,9 @@ export const claudeProbe: UsageProbe = {
 
     if (!orgs.length) return null;
 
+    // Fetch account info for plan detection (best-effort)
+    const planByOrgId = await fetchPlanMap();
+
     const results: UsageData[] = [];
 
     for (const org of orgs) {
@@ -126,6 +161,7 @@ export const claudeProbe: UsageProbe = {
             status: 'authenticated',
             account: org.name || 'Personal',
           },
+          plan: planByOrgId.get(org.uuid),
         };
 
         data.session = normalizeQuotaWindow(usage.five_hour, 'Session (5h)');
@@ -190,4 +226,26 @@ async function fetchUsageAPI(orgId: string) {
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const json = await res.json();
   return UsageResponseSchema.parse(json);
+}
+
+async function fetchPlanMap(): Promise<Map<string, string>> {
+  const map = new Map<string, string>();
+  try {
+    const res = await fetch(`${BASE_URL}/api/account`, {
+      credentials: 'include',
+    });
+    if (!res.ok) return map;
+    const json = await res.json();
+    const account = AccountResponseSchema.parse(json);
+    for (const m of account.memberships ?? []) {
+      const orgId = m.organization.uuid;
+      const plan = inferPlan(m.organization.rate_limit_tier, m.organization.billing_type);
+      if (orgId && plan) {
+        map.set(orgId, plan);
+      }
+    }
+  } catch (err) {
+    console.warn('[ClaudeProbe] fetchAccount failed (plan detection skipped):', err);
+  }
+  return map;
 }
