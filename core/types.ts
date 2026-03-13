@@ -42,3 +42,12 @@ export interface ModelUsage {
   resetAt?: string; // ISO string
   tooltip?: string;
 }
+
+export interface Bookmark {
+  id: string;
+  name: string;
+  url: string;
+  letter: string;
+  color: string;
+  order: number;
+}

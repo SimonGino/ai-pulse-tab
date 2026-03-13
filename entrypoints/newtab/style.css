@@ -98,3 +98,22 @@
     0 -2px 0 0 var(--hover-color),
     0 2px 0 0 var(--hover-color) !important;
 }
+
+/* === Dashboard Grid Layout === */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+@media (min-width: 1024px) {
+  .dashboard-grid {
+    grid-template-columns: minmax(320px, 1fr) minmax(300px, 1fr);
+    align-items: start;
+  }
+
+  .dashboard-bookmarks {
+    position: sticky;
+    top: 32px;
+  }
+}

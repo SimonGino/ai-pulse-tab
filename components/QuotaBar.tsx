@@ -37,7 +37,7 @@ export function QuotaBar({ used, label, tooltip }: QuotaBarProps) {
                 ?
               </span>
               <span
-                className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover:block w-52 px-2.5 py-1.5 text-[11px] leading-snug z-10"
+                className="absolute bottom-full left-0 mb-1.5 hidden group-hover:block w-80 px-3 py-2 text-xs leading-normal z-10"
                 style={{
                   backgroundColor: 'var(--pixel-dark)',
                   color: 'var(--pixel-white)',
