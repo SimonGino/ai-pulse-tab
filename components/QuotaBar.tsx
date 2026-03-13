@@ -6,39 +6,66 @@ interface QuotaBarProps {
   tooltip?: string;
 }
 
-function getColor(used: number): string {
-  if (used >= QUOTA_THRESHOLDS.high) return 'bg-red-500';
-  if (used >= QUOTA_THRESHOLDS.low) return 'bg-orange-400';
-  return 'bg-emerald-500';
+const TOTAL_BLOCKS = 10;
+
+function getBlockColor(used: number): string {
+  if (used >= QUOTA_THRESHOLDS.high) return 'var(--pixel-red)';
+  if (used >= QUOTA_THRESHOLDS.low) return 'var(--pixel-orange)';
+  return 'var(--pixel-green)';
 }
 
 export function QuotaBar({ used, label, tooltip }: QuotaBarProps) {
   const pct = Math.min(Math.max(used, 0), 1) * 100;
-  const color = getColor(used);
+  const filledBlocks = Math.round(used * TOTAL_BLOCKS);
+  const color = getBlockColor(used);
 
   return (
     <div className="space-y-1">
-      <div className="flex justify-between text-xs text-gray-400">
-        <span className="flex items-center gap-1">
+      <div className="flex justify-between text-xs" style={{ color: 'var(--pixel-white)' }}>
+        <span className="pixel-font flex items-center gap-1" style={{ fontSize: '9px' }}>
           {label}
           {tooltip && (
             <span className="relative group cursor-help">
-              <span className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full border border-gray-600 text-[10px] text-gray-500">
-                i
+              <span
+                className="pixel-font inline-flex items-center justify-center w-3.5 h-3.5"
+                style={{
+                  fontSize: '8px',
+                  border: '1px solid var(--pixel-gray)',
+                  color: 'var(--pixel-gray)',
+                }}
+              >
+                ?
               </span>
-              <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover:block w-52 px-2.5 py-1.5 rounded-md bg-gray-700 text-gray-200 text-[11px] leading-snug shadow-lg z-10">
+              <span
+                className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover:block w-52 px-2.5 py-1.5 text-[11px] leading-snug z-10"
+                style={{
+                  backgroundColor: 'var(--pixel-dark)',
+                  color: 'var(--pixel-white)',
+                  border: '2px solid var(--pixel-border)',
+                }}
+              >
                 {tooltip}
               </span>
             </span>
           )}
         </span>
-        <span>{Math.round(pct)}%</span>
+        <span className="pixel-font" style={{ fontSize: '9px' }}>
+          {Math.round(pct)}%
+        </span>
       </div>
-      <div className="h-2 rounded-full bg-gray-700 overflow-hidden">
-        <div
-          className={`h-full rounded-full transition-all duration-300 ${color}`}
-          style={{ width: `${pct}%` }}
-        />
+      <div className="flex gap-[2px]">
+        {Array.from({ length: TOTAL_BLOCKS }, (_, i) => (
+          <div
+            key={i}
+            style={{
+              width: '100%',
+              height: '8px',
+              backgroundColor:
+                i < filledBlocks ? color : 'var(--pixel-gray)',
+              opacity: i < filledBlocks ? 1 : 0.3,
+            }}
+          />
+        ))}
       </div>
     </div>
   );

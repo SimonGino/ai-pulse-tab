@@ -1,0 +1,159 @@
+/* === Pac-Man Decoration Scene === */
+.pacman-scene {
+  position: fixed;
+  bottom: 40px;
+  left: 0;
+  width: 100%;
+  height: 24px;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+/* === Pac-Man Character === */
+.pacman-character {
+  position: absolute;
+  bottom: 0;
+  width: 20px;
+  height: 20px;
+  animation: pacman-move 12s linear infinite;
+}
+
+.pacman-character::before,
+.pacman-character::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+/* Top jaw */
+.pacman-character::before {
+  top: 0;
+  left: 0;
+  border: 10px solid #ffff00;
+  border-right-color: transparent;
+  animation: pacman-chomp-top 0.3s ease-in-out infinite alternate;
+}
+
+/* Bottom jaw */
+.pacman-character::after {
+  bottom: 0;
+  left: 0;
+  border: 10px solid #ffff00;
+  border-right-color: transparent;
+  animation: pacman-chomp-bottom 0.3s ease-in-out infinite alternate;
+}
+
+@keyframes pacman-chomp-top {
+  0% {
+    transform: rotate(-25deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes pacman-chomp-bottom {
+  0% {
+    transform: rotate(25deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes pacman-move {
+  0% {
+    left: -30px;
+  }
+  100% {
+    left: 110%;
+  }
+}
+
+/* === Ghost === */
+.ghost {
+  position: absolute;
+  bottom: 0;
+  width: 20px;
+  height: 20px;
+  background: #ff0000;
+  border-radius: 10px 10px 0 0;
+  animation: ghost-move 12s linear infinite;
+}
+
+.ghost::before {
+  content: '';
+  position: absolute;
+  top: 6px;
+  left: 3px;
+  width: 5px;
+  height: 5px;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 9px 0 0 0 white;
+}
+
+.ghost::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 20px;
+  height: 6px;
+  background:
+    radial-gradient(circle 3px at 3px 0, transparent 3px, #ff0000 3px) bottom left,
+    radial-gradient(circle 3px at 3px 0, transparent 3px, #ff0000 3px) bottom center,
+    radial-gradient(circle 3px at 4px 0, transparent 3px, #ff0000 3px) bottom right;
+  background-size: 7px 6px;
+  background-repeat: no-repeat;
+}
+
+@keyframes ghost-move {
+  0% {
+    left: -80px;
+  }
+  100% {
+    left: calc(110% - 50px);
+  }
+}
+
+/* === Dots === */
+.pacman-dots {
+  position: absolute;
+  bottom: 8px;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-evenly;
+  pointer-events: none;
+}
+
+.pac-dot {
+  width: 4px;
+  height: 4px;
+  background: #ffb8ff;
+  border-radius: 0;
+  opacity: 0.6;
+  animation: dot-blink 3s ease-in-out infinite alternate;
+}
+
+.pac-dot:nth-child(even) {
+  animation-delay: 0.5s;
+}
+
+.pac-dot:nth-child(3n) {
+  width: 8px;
+  height: 8px;
+  opacity: 0.8;
+}
+
+@keyframes dot-blink {
+  0%, 80% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 0.2;
+  }
+}

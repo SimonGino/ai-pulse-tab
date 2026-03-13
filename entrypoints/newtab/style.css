@@ -1,1 +1,86 @@
 @import "tailwindcss";
+
+/* === Pixel Theme: 8-bit Color Palette === */
+:root {
+  --pixel-black: #0f0f0f;
+  --pixel-dark: #1a1a2e;
+  --pixel-blue: #2121de;
+  --pixel-yellow: #ffff00;
+  --pixel-red: #ff0000;
+  --pixel-pink: #ffb8ff;
+  --pixel-cyan: #00ffff;
+  --pixel-orange: #ffb852;
+  --pixel-green: #00ff00;
+  --pixel-white: #e0e0e0;
+  --pixel-gray: #555555;
+  --pixel-border: #3a3a5c;
+}
+
+/* === Pixel Font Family === */
+.pixel-font {
+  font-family: 'Press Start 2P', monospace;
+}
+
+/* === Pixel Border Utility (box-shadow staircase) === */
+.pixel-border {
+  border: none;
+  border-radius: 0;
+  box-shadow:
+    /* outer border */
+    -4px 0 0 0 var(--pixel-border),
+    4px 0 0 0 var(--pixel-border),
+    0 -4px 0 0 var(--pixel-border),
+    0 4px 0 0 var(--pixel-border),
+    /* corners */
+    -4px -4px 0 0 var(--pixel-border),
+    4px -4px 0 0 var(--pixel-border),
+    -4px 4px 0 0 var(--pixel-border),
+    4px 4px 0 0 var(--pixel-border);
+}
+
+.pixel-border-highlight {
+  border: none;
+  border-radius: 0;
+  box-shadow:
+    -4px 0 0 0 var(--pixel-yellow),
+    4px 0 0 0 var(--pixel-yellow),
+    0 -4px 0 0 var(--pixel-yellow),
+    0 4px 0 0 var(--pixel-yellow),
+    -4px -4px 0 0 var(--pixel-yellow),
+    4px -4px 0 0 var(--pixel-yellow),
+    -4px 4px 0 0 var(--pixel-yellow),
+    4px 4px 0 0 var(--pixel-yellow);
+}
+
+/* === Pixel Button === */
+.pixel-btn {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  background: var(--pixel-dark);
+  color: var(--pixel-white);
+  border: none;
+  border-radius: 0;
+  padding: 8px 16px;
+  cursor: pointer;
+  box-shadow:
+    -2px 0 0 0 var(--pixel-border),
+    2px 0 0 0 var(--pixel-border),
+    0 -2px 0 0 var(--pixel-border),
+    0 2px 0 0 var(--pixel-border);
+  transition: background-color 0.1s, box-shadow 0.1s;
+  image-rendering: pixelated;
+}
+
+.pixel-btn:hover:not(:disabled) {
+  background: #2a2a4e;
+  box-shadow:
+    -2px 0 0 0 var(--pixel-yellow),
+    2px 0 0 0 var(--pixel-yellow),
+    0 -2px 0 0 var(--pixel-yellow),
+    0 2px 0 0 var(--pixel-yellow);
+}
+
+.pixel-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

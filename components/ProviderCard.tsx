@@ -11,8 +11,11 @@ interface ProviderCardProps {
 function OrgCard({ data }: { data: UsageData }) {
   if (data.authStatus.status !== 'authenticated') {
     return (
-      <div className="rounded-lg bg-gray-800/50 p-3">
-        <p className="text-sm text-gray-400">
+      <div
+        className="p-3"
+        style={{ backgroundColor: 'var(--pixel-dark)' }}
+      >
+        <p className="text-sm" style={{ color: 'var(--pixel-white)' }}>
           {data.authStatus.status === 'expired'
             ? '请重新登录 claude.ai'
             : '请登录 claude.ai'}
@@ -21,9 +24,10 @@ function OrgCard({ data }: { data: UsageData }) {
           href="https://claude.ai"
           target="_blank"
           rel="noopener noreferrer"
-          className="text-xs text-blue-400 hover:underline mt-1 inline-block"
+          className="pixel-font text-xs mt-1 inline-block"
+          style={{ color: 'var(--pixel-cyan)' }}
         >
-          去登录 →
+          LOGIN →
         </a>
       </div>
     );
@@ -60,7 +64,7 @@ function OrgCard({ data }: { data: UsageData }) {
         </div>
       ))}
       {data.extra && (
-        <p className="text-xs text-gray-500">
+        <p className="pixel-font text-xs" style={{ color: 'var(--pixel-gray)' }}>
           Extra: ${data.extra.spent.toFixed(2)} / ${data.extra.limit.toFixed(2)}
         </p>
       )}
@@ -70,16 +74,26 @@ function OrgCard({ data }: { data: UsageData }) {
 
 export function ProviderCard({
   providerName,
-  color,
   usageDataList,
 }: ProviderCardProps) {
   const isSingleOrg = usageDataList.length === 1;
 
   return (
-    <div className="rounded-xl bg-gray-900 border border-gray-800 p-4 w-full max-w-sm">
+    <div
+      className="pixel-border p-5 w-full max-w-sm"
+      style={{ backgroundColor: 'var(--pixel-dark)' }}
+    >
       <div className="flex items-center gap-2 mb-3">
-        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: color }} />
-        <h2 className="text-lg font-semibold">{providerName}</h2>
+        <div
+          className="w-3 h-3"
+          style={{ backgroundColor: 'var(--pixel-yellow)' }}
+        />
+        <h2
+          className="pixel-font text-sm"
+          style={{ color: 'var(--pixel-yellow)' }}
+        >
+          {providerName}
+        </h2>
       </div>
 
       {isSingleOrg ? (
@@ -87,8 +101,15 @@ export function ProviderCard({
       ) : (
         <div className="space-y-3">
           {usageDataList.map((data) => (
-            <div key={data.orgId} className="rounded-lg bg-gray-800/50 p-3">
-              <p className="text-xs font-medium text-gray-300 mb-2">
+            <div
+              key={data.orgId}
+              className="p-3"
+              style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}
+            >
+              <p
+                className="pixel-font text-xs mb-2"
+                style={{ color: 'var(--pixel-white)' }}
+              >
                 {data.orgName}
               </p>
               <OrgCard data={data} />

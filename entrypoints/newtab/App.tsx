@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useUsageData } from '@/hooks/useUsageData';
 import { ProviderCard } from '@/components/ProviderCard';
+import { QuickLinks } from '@/components/QuickLinks';
+import { PacmanDecoration } from '@/components/PacmanDecoration';
 import { PROVIDERS } from '@/core/constants';
 
 function formatRelativeTime(ts: number): string {
@@ -32,23 +34,36 @@ export default function App() {
     claudeData.every((d) => d.authStatus.status !== 'authenticated');
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white flex flex-col items-center justify-center p-8 gap-6">
-      <h1 className="text-2xl font-bold text-gray-200">AI Pulse Tab</h1>
+    <div
+      className="min-h-screen text-white flex flex-col items-center justify-center p-8 gap-6"
+      style={{ backgroundColor: 'var(--pixel-black)' }}
+    >
+      <h1
+        className="pixel-font text-lg"
+        style={{ color: 'var(--pixel-yellow)', letterSpacing: '2px' }}
+      >
+        AI Pulse Tab
+      </h1>
 
       {!hasData && !isNotLoggedIn && (
-        <p className="text-gray-500">加载中...</p>
+        <p className="pixel-font text-xs" style={{ color: 'var(--pixel-gray)' }}>
+          LOADING...
+        </p>
       )}
 
       {isNotLoggedIn && !hasData && (
         <div className="text-center space-y-2">
-          <p className="text-gray-400">未检测到登录状态</p>
+          <p className="pixel-font text-xs" style={{ color: 'var(--pixel-white)' }}>
+            NOT LOGGED IN
+          </p>
           <a
             href="https://claude.ai"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-blue-400 hover:underline text-sm"
+            className="pixel-font text-xs"
+            style={{ color: 'var(--pixel-cyan)' }}
           >
-            请先登录 claude.ai →
+            LOGIN claude.ai →
           </a>
         </div>
       )}
@@ -61,18 +76,24 @@ export default function App() {
         />
       )}
 
-      <div className="flex items-center gap-3 text-xs text-gray-500">
+      <QuickLinks />
+
+      <div className="flex items-center gap-3 text-xs">
         {lastUpdated > 0 && (
-          <span>最后更新: {formatRelativeTime(lastUpdated)}</span>
+          <span className="pixel-font" style={{ fontSize: '8px', color: 'var(--pixel-gray)' }}>
+            最后更新: {formatRelativeTime(lastUpdated)}
+          </span>
         )}
         <button
           onClick={handleRefresh}
           disabled={refreshing}
-          className="px-3 py-1 rounded-md bg-gray-800 hover:bg-gray-700 disabled:opacity-50 transition-colors text-gray-300"
+          className="pixel-btn"
         >
-          {refreshing ? '刷新中...' : '⟳ 刷新'}
+          {refreshing ? 'LOADING...' : 'REFRESH'}
         </button>
       </div>
+
+      <PacmanDecoration />
     </div>
   );
 }

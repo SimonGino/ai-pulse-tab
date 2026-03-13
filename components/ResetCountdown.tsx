@@ -28,5 +28,12 @@ export function ResetCountdown({ resetAt }: ResetCountdownProps) {
     return () => clearInterval(timer);
   }, [resetAt]);
 
-  return <span className="text-xs text-gray-500">重置: {text}</span>;
+  return (
+    <span
+      className="pixel-font"
+      style={{ fontSize: '8px', color: 'var(--pixel-cyan)' }}
+    >
+      RESET: {text}
+    </span>
+  );
 }
