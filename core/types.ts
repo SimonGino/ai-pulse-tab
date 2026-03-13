@@ -27,6 +27,7 @@ export interface UsageData {
     currency: string;
   };
   plan?: string;
+  warning?: string;
 }
 
 export interface QuotaWindow {

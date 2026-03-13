@@ -28,10 +28,8 @@ export default function App() {
   };
 
   const claudeData = data.filter((d) => d.provider === PROVIDERS.claude.id);
-  const hasData = claudeData.length > 0;
-  const isNotLoggedIn =
-    !hasData ||
-    claudeData.every((d) => d.authStatus.status !== 'authenticated');
+  const chatgptData = data.filter((d) => d.provider === PROVIDERS.chatgpt.id);
+  const hasAnyData = claudeData.length > 0 || chatgptData.length > 0;
 
   return (
     <div
@@ -45,33 +43,32 @@ export default function App() {
         AI Pulse Tab
       </h1>
 
-      {!hasData && !isNotLoggedIn && (
-        <p className="pixel-font text-xs" style={{ color: 'var(--pixel-gray)' }}>
-          LOADING...
-        </p>
-      )}
-
-      {isNotLoggedIn && !hasData && (
+      {!hasAnyData && (
         <div className="text-center space-y-2">
           <p className="pixel-font text-xs" style={{ color: 'var(--pixel-white)' }}>
             NOT LOGGED IN
           </p>
-          <a
-            href="https://claude.ai"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="pixel-font text-xs"
-            style={{ color: 'var(--pixel-cyan)' }}
-          >
-            LOGIN claude.ai →
-          </a>
+          <p className="pixel-font text-xs" style={{ color: 'var(--pixel-gray)' }}>
+            Login to your AI providers to see usage
+          </p>
         </div>
       )}
 
-      {hasData && (
+      {claudeData.length > 0 && (
         <ProviderCard
           providerName={PROVIDERS.claude.name}
           usageDataList={claudeData}
+          loginUrl={PROVIDERS.claude.baseUrl}
+          color={PROVIDERS.claude.color}
+        />
+      )}
+
+      {chatgptData.length > 0 && (
+        <ProviderCard
+          providerName={PROVIDERS.chatgpt.name}
+          usageDataList={chatgptData}
+          loginUrl={PROVIDERS.chatgpt.baseUrl}
+          color={PROVIDERS.chatgpt.color}
         />
       )}
 
