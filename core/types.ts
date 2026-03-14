@@ -59,4 +59,5 @@ export interface SearchEngine {
   name: string;
   urlTemplate: string;
   icon: string;
+  suggestUrl?: string;
 }

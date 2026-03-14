@@ -132,5 +132,15 @@ export default defineBackground(() => {
       refreshProvider(message.providerId).then(() => sendResponse({ ok: true }));
       return true; // async response
     }
+    if (message?.type === 'FETCH_SUGGESTIONS' && message.url) {
+      fetch(message.url)
+        .then((res) => {
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          return res.json();
+        })
+        .then((data) => sendResponse({ ok: true, data }))
+        .catch(() => sendResponse({ ok: false }));
+      return true; // async response
+    }
   });
 });

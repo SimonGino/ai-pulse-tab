@@ -9,6 +9,12 @@ export default defineConfig({
   manifest: {
     name: 'AI Pulse Tab',
     permissions: ['cookies', 'storage', 'alarms'],
-    host_permissions: ['https://claude.ai/*', 'https://chatgpt.com/*'],
+    host_permissions: [
+      'https://claude.ai/*',
+      'https://chatgpt.com/*',
+      'https://suggestqueries.google.com/*',
+      'https://api.bing.com/*',
+      'https://duckduckgo.com/*',
+    ],
   },
 });

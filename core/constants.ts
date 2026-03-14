@@ -22,9 +22,9 @@ export const PROVIDERS = {
 } as const;
 
 export const SEARCH_ENGINES = [
-  { id: 'google', name: 'Google', urlTemplate: 'https://www.google.com/search?q={query}', icon: 'G' },
-  { id: 'bing', name: 'Bing', urlTemplate: 'https://www.bing.com/search?q={query}', icon: 'B' },
-  { id: 'duckduckgo', name: 'DuckDuckGo', urlTemplate: 'https://duckduckgo.com/?q={query}', icon: 'D' },
+  { id: 'google', name: 'Google', urlTemplate: 'https://www.google.com/search?q={query}', icon: 'G', suggestUrl: 'https://suggestqueries.google.com/complete/search?client=chrome&q={query}' },
+  { id: 'bing', name: 'Bing', urlTemplate: 'https://www.bing.com/search?q={query}', icon: 'B', suggestUrl: 'https://api.bing.com/osjson.aspx?query={query}' },
+  { id: 'duckduckgo', name: 'DuckDuckGo', urlTemplate: 'https://duckduckgo.com/?q={query}', icon: 'D', suggestUrl: 'https://duckduckgo.com/ac/?q={query}&type=list' },
   { id: 'perplexity', name: 'Perplexity', urlTemplate: 'https://www.perplexity.ai/search?q={query}', icon: 'P' },
 ] as const;
 

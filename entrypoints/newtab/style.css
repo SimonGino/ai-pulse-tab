@@ -113,6 +113,7 @@
 /* === Search Bar === */
 .search-bar-container {
   width: 100%;
+  position: relative;
 }
 
 .search-bar {
@@ -207,6 +208,38 @@
 .search-engine-option:hover,
 .search-engine-btn:hover {
   background: var(--pixel-hover-bg);
+}
+
+/* === Search Suggestions Dropdown === */
+.search-suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 8px;
+  background: var(--pixel-dark);
+  z-index: 40;
+}
+
+.search-suggestion-item {
+  display: block;
+  width: 100%;
+  padding: 10px 12px;
+  background: transparent;
+  border: none;
+  color: var(--pixel-white);
+  cursor: pointer;
+  font-size: 10px;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.search-suggestion-item:hover,
+.search-suggestion-active {
+  background: var(--pixel-hover-bg);
+  color: var(--pixel-cyan);
 }
 
 /* === Dashboard Vertical Flow Layout === */
