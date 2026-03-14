@@ -70,33 +70,29 @@ export function SearchBar() {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (showSuggestions) {
-      if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        setHighlightIndex((prev) => (prev + 1) % suggestions.length);
-        return;
-      }
-      if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        setHighlightIndex((prev) => (prev - 1 + suggestions.length) % suggestions.length);
-        return;
-      }
-      if (e.key === 'Escape') {
-        setSuggestionsOpen(false);
-        return;
-      }
-      if (e.key === 'Enter') {
-        if (highlightIndex >= 0) {
-          handleSuggestionSelect(suggestions[highlightIndex]);
-        } else {
-          handleSearch();
-        }
-        return;
-      }
-    } else {
-      if (e.key === 'Enter') {
+    if (e.key === 'Enter') {
+      if (showSuggestions && highlightIndex >= 0) {
+        handleSuggestionSelect(suggestions[highlightIndex]);
+      } else {
         handleSearch();
       }
+      return;
+    }
+
+    if (!showSuggestions) return;
+
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        setHighlightIndex((prev) => (prev + 1) % suggestions.length);
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        setHighlightIndex((prev) => (prev - 1 + suggestions.length) % suggestions.length);
+        break;
+      case 'Escape':
+        setSuggestionsOpen(false);
+        break;
     }
   };
 
