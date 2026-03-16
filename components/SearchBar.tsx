@@ -56,7 +56,7 @@ export function SearchBar() {
   const executeSearch = (text: string) => {
     if (!text.trim()) return;
     const url = engine.urlTemplate.replace('{query}', encodeURIComponent(text.trim()));
-    window.open(url, '_blank');
+    window.location.href = url;
   };
 
   const handleSearch = () => {
