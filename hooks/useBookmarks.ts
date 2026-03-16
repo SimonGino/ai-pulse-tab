@@ -55,13 +55,11 @@ export function useBookmarks() {
   );
 
   const addBookmark = useCallback(
-    (name: string, url: string, letter?: string, color?: string) => {
+    (name: string, url: string) => {
       applyBookmarks((current) => addBookmarkToList(current, {
         id: crypto.randomUUID(),
         name,
         url,
-        letter,
-        color,
       }));
     },
     [applyBookmarks],

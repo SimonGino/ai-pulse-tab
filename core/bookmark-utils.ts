@@ -1,4 +1,3 @@
-import { BOOKMARK_COLORS } from '@/core/constants';
 import type { Bookmark } from '@/core/types';
 
 export interface BookmarkFormErrors {
@@ -53,17 +52,17 @@ export function addBookmarkToList(
 ): Bookmark[] {
   const maxOrder = bookmarks.reduce((max, bookmark) => Math.max(max, bookmark.order), -1);
 
-  return [
-    ...bookmarks,
-    {
-      id,
-      name,
-      url,
-      letter: deriveBookmarkLetter(name, letter),
-      color: color || BOOKMARK_COLORS[bookmarks.length % BOOKMARK_COLORS.length],
-      order: maxOrder + 1,
-    },
-  ];
+  const newBookmark: Bookmark = {
+    id,
+    name,
+    url,
+    letter: deriveBookmarkLetter(name, letter),
+    order: maxOrder + 1,
+  };
+  if (color) {
+    newBookmark.color = color;
+  }
+  return [...bookmarks, newBookmark];
 }
 
 export function editBookmarkInList(

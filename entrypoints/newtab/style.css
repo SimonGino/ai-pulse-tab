@@ -5,10 +5,8 @@
   --pixel-black: #0f0f0f;
   --pixel-dark: #1a1a2e;
   --pixel-blue: #2121de;
-  --pixel-yellow: #ffff00;
   --pixel-red: #f87171;
-  --pixel-pink: #ffb8ff;
-  --pixel-cyan: #22d3ee;
+  --pixel-cyan: #22d3ee; /* retained for backwards compat, not used as UI accent */
   --pixel-orange: #fb923c;
   --pixel-green: #4ade80;
   --pixel-reset-text: #9ca3af;
@@ -53,14 +51,14 @@
   border: none;
   border-radius: 0;
   box-shadow:
-    -4px 0 0 0 var(--pixel-cyan),
-    4px 0 0 0 var(--pixel-cyan),
-    0 -4px 0 0 var(--pixel-cyan),
-    0 4px 0 0 var(--pixel-cyan),
-    -4px -4px 0 0 var(--pixel-cyan),
-    4px -4px 0 0 var(--pixel-cyan),
-    -4px 4px 0 0 var(--pixel-cyan),
-    4px 4px 0 0 var(--pixel-cyan);
+    -4px 0 0 0 var(--pixel-white),
+    4px 0 0 0 var(--pixel-white),
+    0 -4px 0 0 var(--pixel-white),
+    0 4px 0 0 var(--pixel-white),
+    -4px -4px 0 0 var(--pixel-white),
+    4px -4px 0 0 var(--pixel-white),
+    -4px 4px 0 0 var(--pixel-white),
+    4px 4px 0 0 var(--pixel-white);
 }
 
 /* === Pixel Button === */
@@ -85,10 +83,10 @@
 .pixel-btn:hover:not(:disabled) {
   background: var(--pixel-hover-bg);
   box-shadow:
-    -2px 0 0 0 var(--pixel-cyan),
-    2px 0 0 0 var(--pixel-cyan),
-    0 -2px 0 0 var(--pixel-cyan),
-    0 2px 0 0 var(--pixel-cyan);
+    -2px 0 0 0 var(--pixel-white),
+    2px 0 0 0 var(--pixel-white),
+    0 -2px 0 0 var(--pixel-white),
+    0 2px 0 0 var(--pixel-white);
 }
 
 .pixel-btn:disabled {
@@ -110,138 +108,6 @@
     0 2px 0 0 var(--hover-color) !important;
 }
 
-/* === Search Bar === */
-.search-bar-container {
-  width: 100%;
-  position: relative;
-}
-
-.search-bar {
-  padding: 2px;
-  background: var(--pixel-dark);
-  display: flex;
-  align-items: center;
-  position: relative;
-}
-
-.search-engine-selector {
-  position: relative;
-}
-
-.search-engine-btn {
-  background: transparent;
-  border: none;
-  color: var(--pixel-cyan);
-  cursor: pointer;
-  padding: 8px 12px;
-  font-size: 10px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  white-space: nowrap;
-}
-
-.search-engine-label {
-  font-size: 8px;
-  color: var(--pixel-white);
-}
-
-.search-engine-caret {
-  font-size: 6px;
-  color: var(--pixel-gray);
-}
-
-.search-engine-dropdown {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  margin-top: 8px;
-  background: var(--pixel-dark);
-  z-index: 50;
-  min-width: 140px;
-}
-
-.search-engine-option {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-  padding: 8px 12px;
-  background: transparent;
-  border: none;
-  color: var(--pixel-white);
-  cursor: pointer;
-  font-size: 8px;
-  text-align: left;
-}
-
-.search-engine-option-active {
-  background: var(--pixel-hover-bg);
-  color: var(--pixel-cyan);
-}
-
-.search-engine-option-icon {
-  color: var(--pixel-cyan);
-}
-
-.search-bar-divider {
-  width: 2px;
-  height: 20px;
-  background: var(--pixel-border);
-}
-
-.search-bar-input {
-  flex: 1;
-  background: transparent;
-  border: none;
-  outline: none;
-  color: var(--pixel-white);
-  padding: 10px 12px;
-  font-size: 10px;
-  min-width: 0;
-}
-
-.search-bar-input::placeholder {
-  color: var(--pixel-gray);
-}
-
-.search-engine-option:hover,
-.search-engine-btn:hover {
-  background: var(--pixel-hover-bg);
-}
-
-/* === Search Suggestions Dropdown === */
-.search-suggestions {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  margin-top: 8px;
-  background: var(--pixel-dark);
-  z-index: 40;
-}
-
-.search-suggestion-item {
-  display: block;
-  width: 100%;
-  padding: 10px 12px;
-  background: transparent;
-  border: none;
-  color: var(--pixel-white);
-  cursor: pointer;
-  font-size: 10px;
-  text-align: left;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.search-suggestion-item:hover,
-.search-suggestion-active {
-  background: var(--pixel-hover-bg);
-  color: var(--pixel-cyan);
-}
-
 /* === Dashboard Vertical Flow Layout === */
 .dashboard-content {
   width: 100%;
@@ -260,6 +126,6 @@
 @media (min-width: 1024px) {
   .providers-grid {
     grid-template-columns: 1fr 1fr;
-    align-items: start;
+    align-items: stretch;
   }
 }

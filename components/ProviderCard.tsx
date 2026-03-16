@@ -10,12 +10,21 @@ import {
 import { QuotaBar } from './QuotaBar';
 import { ResetCountdown } from './ResetCountdown';
 
+function formatRelativeTime(ts: number): string {
+  if (!ts) return '';
+  const diff = Math.floor((Date.now() - ts) / 1000);
+  if (diff < 60) return 'just now';
+  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+  return `${Math.floor(diff / 3600)}h ago`;
+}
+
 interface ProviderCardProps {
   providerName: string;
   providerId: string;
   usageDataList: UsageData[];
   loginUrl?: string;
   color?: string;
+  lastUpdated?: number;
 }
 
 function OrgCard({ data, loginUrl }: { data: UsageData; loginUrl?: string }) {
@@ -36,7 +45,7 @@ function OrgCard({ data, loginUrl }: { data: UsageData; loginUrl?: string }) {
           target="_blank"
           rel="noopener noreferrer"
           className="pixel-font text-xs mt-1 inline-block"
-          style={{ color: 'var(--pixel-cyan)' }}
+          style={{ color: 'var(--pixel-white)' }}
         >
           LOGIN →
         </a>
@@ -129,10 +138,11 @@ export function ProviderCard({
   usageDataList,
   loginUrl,
   color,
+  lastUpdated,
 }: ProviderCardProps) {
   const isSingleOrg = usageDataList.length === 1;
-  const indicatorColor = color ?? 'var(--pixel-cyan)';
   const [collapsed, setCollapsed] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const collapsedRef = useRef(false);
   const persistQueueRef = useRef<Promise<void>>(Promise.resolve());
 
@@ -188,6 +198,15 @@ export function ProviderCard({
     }
   };
 
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await browser.runtime.sendMessage({ type: 'REFRESH_PROVIDER', providerId });
+    } finally {
+      setTimeout(() => setRefreshing(false), 1500);
+    }
+  };
+
   return (
     <div
       className="pixel-border p-5 w-full"
@@ -197,16 +216,12 @@ export function ProviderCard({
         className="flex items-center gap-2 select-none"
         style={{ marginBottom: collapsed ? 0 : '12px' }}
       >
-        <div
-          className="w-3 h-3"
-          style={{ backgroundColor: indicatorColor }}
-        />
         <a
           href={loginUrl}
           target="_blank"
           rel="noopener noreferrer"
           className="pixel-font text-sm flex-1"
-          style={{ color: indicatorColor, textDecoration: 'none' }}
+          style={{ color: 'var(--pixel-white)', textDecoration: 'none' }}
           onClick={(e) => e.stopPropagation()}
         >
           {providerName}
@@ -233,27 +248,46 @@ export function ProviderCard({
       </div>
 
       {!collapsed && (
-        isSingleOrg ? (
-          <OrgCard data={usageDataList[0]} loginUrl={loginUrl} />
-        ) : (
-          <div className="space-y-3">
-            {usageDataList.map((data) => (
-              <div
-                key={data.orgId}
-                className="p-3"
-                style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}
-              >
-                <p
-                  className="data-font text-xs mb-2 font-medium"
-                  style={{ color: 'var(--pixel-white)' }}
+        <>
+          {isSingleOrg ? (
+            <OrgCard data={usageDataList[0]} loginUrl={loginUrl} />
+          ) : (
+            <div className="space-y-3">
+              {usageDataList.map((data) => (
+                <div
+                  key={data.orgId}
+                  className="p-3"
+                  style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}
                 >
-                  {data.orgName}
-                </p>
-                <OrgCard data={data} loginUrl={loginUrl} />
-              </div>
-            ))}
+                  <p
+                    className="data-font text-xs mb-2 font-medium"
+                    style={{ color: 'var(--pixel-white)' }}
+                  >
+                    {data.orgName}
+                  </p>
+                  <OrgCard data={data} loginUrl={loginUrl} />
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Per-card refresh */}
+          <div className="flex items-center gap-3 mt-3">
+            <button
+              onClick={handleRefresh}
+              disabled={refreshing}
+              className="pixel-btn"
+              style={{ fontSize: '8px', padding: '4px 10px' }}
+            >
+              {refreshing ? '...' : 'REFRESH'}
+            </button>
+            {lastUpdated != null && lastUpdated > 0 && (
+              <span className="data-font" style={{ fontSize: '9px', color: 'var(--pixel-reset-text)' }}>
+                {formatRelativeTime(lastUpdated)}
+              </span>
+            )}
           </div>
-        )
+        </>
       )}
     </div>
   );

@@ -12,9 +12,6 @@ export default defineConfig({
     host_permissions: [
       'https://claude.ai/*',
       'https://chatgpt.com/*',
-      'https://suggestqueries.google.com/*',
-      'https://api.bing.com/*',
-      'https://duckduckgo.com/*',
     ],
   },
 });

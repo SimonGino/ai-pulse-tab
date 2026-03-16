@@ -1,15 +1,15 @@
 ## ADDED Requirements
 
 ### Requirement: 书签卡片像素风格
-书签卡片 SHALL 保持像素风格：像素边框（box-shadow 阶梯状）、像素字体图标、深色背景。悬停时 SHALL 显示对应书签颜色的高亮效果。配色 SHALL 使用精简后的调色板（降低饱和度的 Tailwind 400 色阶）。
+书签卡片 SHALL 采用紧凑的灰色调像素风格：像素边框（box-shadow 阶梯状）、深色背景、灰色文字。书签图标 SHALL 使用 favicon 而非彩色字母。悬停时 SHALL 显示灰色高亮效果。
 
 #### Scenario: 书签卡片渲染
 - **WHEN** 书签区域渲染用户的书签
-- **THEN** 每个书签以像素风格卡片呈现，包含彩色字母图标和名称标签
+- **THEN** 每个书签以紧凑像素风格呈现，包含 favicon 图标和灰色名称标签
 
 #### Scenario: 书签卡片悬停效果
 - **WHEN** 用户将鼠标悬停在某个书签卡片上
-- **THEN** 卡片显示该书签配置颜色的像素风格高亮效果
+- **THEN** 卡片显示 `--pixel-hover-bg` 背景色和灰色边框高亮
 
 ### Requirement: 添加按钮像素风格
 书签网格末尾的"+"添加按钮 SHALL 使用像素风格，与书签卡片大小一致，使用虚线像素边框区分。
@@ -59,7 +59,7 @@ Provider 卡片的折叠/展开按钮 SHALL 使用像素风格图标（如像素
 - **THEN** 数据区域使用系统等宽字体（ui-monospace, monospace）作为回退
 
 ### Requirement: 精简配色方案
-页面 SHALL 使用精简后的配色方案：正常/低用量使用 `#4ade80`（降饱和绿），中用量/警告使用 `#fb923c`（降饱和橙），高用量/危险使用 `#f87171`（降饱和红），主强调色使用 `#22d3ee`（降饱和青）。倒计时文字 SHALL 使用 `#9ca3af`（灰色），不再使用红色。`--pixel-yellow` 和 `--pixel-pink` SHALL 仅保留在 Pacman 装饰元素中，不再用于主要 UI。
+页面 SHALL 使用灰度为主的配色体系。唯一的饱和色为 quota bar 的状态色：正常/低用量 `#4ade80`（绿），中用量/警告 `#fb923c`（橙），高用量/危险 `#f87171`（红）。所有其他 UI 元素（搜索栏、书签、section header、provider 名称）SHALL 使用灰度色（`--pixel-white`、`--pixel-gray`、`--pixel-border`）。`--pixel-cyan` SHALL 不再作为 UI 强调色。`--pixel-yellow` 和 `--pixel-pink` SHALL 删除（随 Pac-Man 组件移除）。
 
 #### Scenario: 低用量进度条颜色
 - **WHEN** 某配额使用率 < 50%
@@ -73,9 +73,17 @@ Provider 卡片的折叠/展开按钮 SHALL 使用像素风格图标（如像素
 - **WHEN** 某配额使用率 > 80%
 - **THEN** 进度条使用 `#f87171` 红色
 
-#### Scenario: 倒计时文字颜色
-- **WHEN** 页面渲染 RESET 倒计时
-- **THEN** 倒计时文字使用 `#9ca3af` 灰色而非红色
+#### Scenario: 搜索栏灰色调
+- **WHEN** 搜索栏渲染
+- **THEN** 搜索引擎选择器文字、分隔线、placeholder 均使用灰度色，不使用 cyan
+
+#### Scenario: Provider 名称灰色调
+- **WHEN** Provider 卡片渲染标题
+- **THEN** Provider 名称使用 `--pixel-white`，不使用品牌色（amber/teal）
+
+#### Scenario: Section header 灰色调
+- **WHEN** 页面渲染 "BOOKMARKS" 等 section 标题
+- **THEN** 标题使用 `--pixel-gray`，不使用 cyan
 
 ### Requirement: 进度条加宽
 QuotaBar 组件 SHALL 使用加宽的条状设计（高度约 16px），保持 10 段分段但段间间距缩小，视觉上更连续。
