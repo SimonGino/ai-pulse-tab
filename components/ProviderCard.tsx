@@ -201,9 +201,12 @@ export function ProviderCard({
   const handleRefresh = async () => {
     setRefreshing(true);
     try {
-      await browser.runtime.sendMessage({ type: 'REFRESH_PROVIDER', providerId });
+      await Promise.all([
+        browser.runtime.sendMessage({ type: 'REFRESH_PROVIDER', providerId }),
+        new Promise((r) => setTimeout(r, 1500)),
+      ]);
     } finally {
-      setTimeout(() => setRefreshing(false), 1500);
+      setRefreshing(false);
     }
   };
 
