@@ -82,8 +82,6 @@ export function BookmarkGrid() {
           <a
             key={bookmark.id}
             href={bookmark.url}
-            target="_blank"
-            rel="noopener noreferrer"
             className="quick-link-card flex flex-col items-center gap-2 p-3 transition-all"
             onContextMenu={(e) => handleContextMenu(e, bookmark)}
             style={{
