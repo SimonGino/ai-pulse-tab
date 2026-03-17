@@ -1,4 +1,4 @@
-## ADDED Requirements
+## MODIFIED Requirements
 
 ### Requirement: 书签数据模型
 系统 SHALL 使用以下数据结构存储每个书签：id（唯一标识）、name（显示名称）、url（目标地址）、order（排序序号）。`letter` 和 `color` 字段 SHALL 为 optional，保留用于向后兼容已有数据。新增书签不再需要 letter 和 color。
@@ -10,28 +10,6 @@
 #### Scenario: 旧书签数据兼容
 - **WHEN** 系统读取包含 letter 和 color 字段的旧版书签数据
 - **THEN** 系统正常加载，letter 作为 favicon fallback 使用，color 字段被忽略
-
-### Requirement: 书签持久化存储
-书签数据 SHALL 通过 `browser.storage.local` 持久化，使用 `bookmarks` 作为存储键。书签数据 SHALL 在浏览器重启后保留。
-
-#### Scenario: 书签数据持久化
-- **WHEN** 用户添加书签后关闭浏览器并重新打开新标签页
-- **THEN** 之前添加的书签仍然显示
-
-#### Scenario: 存储键命名
-- **WHEN** 系统读写书签数据
-- **THEN** 使用 `bookmarks` 作为 `browser.storage.local` 的键名
-
-### Requirement: 默认书签初始化
-系统 SHALL 在首次安装或升级时（检测到 `bookmarks` 键不存在），自动写入默认书签列表：Claude (claude.ai)、ChatGPT (chatgpt.com)、Douyu (douyu.com)、X (x.com)。
-
-#### Scenario: 首次安装初始化
-- **WHEN** 用户首次安装扩展并打开新标签页
-- **THEN** 书签区域显示 4 个默认书签
-
-#### Scenario: 已有书签不覆盖
-- **WHEN** 用户已自定义书签后扩展更新
-- **THEN** 系统检测到 `bookmarks` 键已存在，不覆盖用户数据
 
 ### Requirement: 添加书签
 用户 SHALL 能够通过点击 "+" 按钮添加新书签。添加时 SHALL 弹出 Modal 表单，仅要求输入书签名称（必填）和 URL（必填）。不再包含颜色选择器和字母输入。
@@ -58,18 +36,3 @@
 #### Scenario: 编辑书签内容
 - **WHEN** 用户选择 "编辑" 并修改名称为 "My GitHub"
 - **THEN** 书签名称更新为 "My GitHub"，变更持久化到存储
-
-### Requirement: 删除书签
-用户 SHALL 能够删除不需要的书签。删除操作 SHALL 要求确认。
-
-#### Scenario: 删除书签流程
-- **WHEN** 用户右键点击书签并选择"删除"
-- **THEN** 弹出确认提示
-
-#### Scenario: 确认删除
-- **WHEN** 用户确认删除
-- **THEN** 书签从网格中移除，变更持久化到存储
-
-#### Scenario: 取消删除
-- **WHEN** 用户取消删除
-- **THEN** 书签保留不变

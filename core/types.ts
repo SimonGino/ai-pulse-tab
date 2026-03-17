@@ -47,17 +47,8 @@ export interface Bookmark {
   id: string;
   name: string;
   url: string;
-  letter: string;
-  color: string;
+  letter?: string;
+  color?: string;
   order: number;
 }
 
-export type SearchEngineId = 'google' | 'bing' | 'duckduckgo' | 'perplexity';
-
-export interface SearchEngine {
-  id: SearchEngineId;
-  name: string;
-  urlTemplate: string;
-  icon: string;
-  suggestUrl?: string;
-}

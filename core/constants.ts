@@ -21,38 +21,18 @@ export const PROVIDERS = {
   },
 } as const;
 
-export const SEARCH_ENGINES = [
-  { id: 'google', name: 'Google', urlTemplate: 'https://www.google.com/search?q={query}', icon: 'G', suggestUrl: 'https://suggestqueries.google.com/complete/search?client=chrome&q={query}' },
-  { id: 'bing', name: 'Bing', urlTemplate: 'https://www.bing.com/search?q={query}', icon: 'B', suggestUrl: 'https://api.bing.com/osjson.aspx?query={query}' },
-  { id: 'duckduckgo', name: 'DuckDuckGo', urlTemplate: 'https://duckduckgo.com/?q={query}', icon: 'D', suggestUrl: 'https://duckduckgo.com/ac/?q={query}&type=list' },
-  { id: 'perplexity', name: 'Perplexity', urlTemplate: 'https://www.perplexity.ai/search?q={query}', icon: 'P' },
-] as const;
-
 export const STORAGE_KEYS = {
   usageData: 'usageData',
   lastUpdated: 'lastUpdated',
   bookmarks: 'bookmarks',
   collapsedProviders: 'collapsedProviders',
-  preferredSearchEngine: 'preferredSearchEngine',
 } as const;
 
-export const BOOKMARK_COLORS = [
-  '#D97706', // amber
-  '#10A37F', // green
-  '#FF6A00', // orange
-  '#FFFFFF', // white
-  '#ff0000', // red
-  '#ffb8ff', // pink
-  '#00ffff', // cyan
-  '#2121de', // blue
-  '#ffff00', // yellow
-  '#00ff00', // green-bright
-] as const;
-
 export const DEFAULT_BOOKMARKS = [
-  { id: 'default-1', name: 'Claude', url: 'https://claude.ai', letter: 'C', color: '#D97706', order: 0 },
-  { id: 'default-2', name: 'ChatGPT', url: 'https://chatgpt.com', letter: 'G', color: '#10A37F', order: 1 },
-  { id: 'default-3', name: 'Gemini', url: 'https://gemini.google.com', letter: 'G', color: '#FF6A00', order: 2 },
-  { id: 'default-4', name: 'GitHub', url: 'https://github.com', letter: 'G', color: '#FFFFFF', order: 3 },
-  { id: 'default-5', name: 'X', url: 'https://x.com', letter: 'X', color: '#00ffff', order: 4 },
+  { id: 'default-1', name: 'Claude', url: 'https://claude.ai', order: 0 },
+  { id: 'default-2', name: 'ChatGPT', url: 'https://chatgpt.com', order: 1 },
+  { id: 'default-3', name: 'Google', url: 'https://www.google.com', order: 2 },
+  { id: 'default-4', name: 'Gemini', url: 'https://gemini.google.com', order: 3 },
+  { id: 'default-5', name: 'GitHub', url: 'https://github.com', order: 4 },
+  { id: 'default-6', name: 'X', url: 'https://x.com', order: 5 },
 ] as const;

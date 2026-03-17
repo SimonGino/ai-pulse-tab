@@ -1,8 +1,45 @@
 import { useState, useEffect, useRef } from 'react';
-import { shouldCloseBookmarkContextMenu } from '@/core/bookmark-utils';
+import { shouldCloseBookmarkContextMenu, deriveBookmarkLetter } from '@/core/bookmark-utils';
 import { useBookmarks } from '@/hooks/useBookmarks';
 import { BookmarkModal } from './BookmarkModal';
 import type { Bookmark } from '@/core/types';
+
+function getFaviconUrl(bookmarkUrl: string): string | null {
+  try {
+    const { hostname } = new URL(bookmarkUrl);
+    return `https://www.google.com/s2/favicons?domain=${hostname}&sz=32`;
+  } catch {
+    return null;
+  }
+}
+
+function BookmarkIcon({ bookmark }: { bookmark: Bookmark }) {
+  const [imgFailed, setImgFailed] = useState(false);
+  const faviconUrl = getFaviconUrl(bookmark.url);
+  const fallbackLetter = deriveBookmarkLetter(bookmark.name, bookmark.letter);
+
+  if (!faviconUrl || imgFailed) {
+    return (
+      <span
+        className="pixel-font flex items-center justify-center"
+        style={{ width: '20px', height: '20px', fontSize: '12px', color: 'var(--pixel-gray)' }}
+      >
+        {fallbackLetter}
+      </span>
+    );
+  }
+
+  return (
+    <img
+      src={faviconUrl}
+      alt=""
+      width={20}
+      height={20}
+      onError={() => setImgFailed(true)}
+      style={{ imageRendering: 'auto' }}
+    />
+  );
+}
 
 interface ContextMenuState {
   bookmark: Bookmark;
@@ -54,11 +91,11 @@ export function BookmarkGrid() {
     }
   };
 
-  const handleSave = (name: string, url: string, letter: string, color: string) => {
+  const handleSave = (name: string, url: string) => {
     if (editingBookmark) {
-      editBookmark(editingBookmark.id, { name, url, letter, color });
+      editBookmark(editingBookmark.id, { name, url });
     } else {
-      addBookmark(name, url, letter, color);
+      addBookmark(name, url);
     }
     setModalOpen(false);
     setEditingBookmark(null);
@@ -73,20 +110,20 @@ export function BookmarkGrid() {
     <div className="w-full">
       <h3
         className="pixel-font text-xs mb-3"
-        style={{ color: 'var(--pixel-cyan)', fontSize: '9px' }}
+        style={{ color: 'var(--pixel-gray)', fontSize: '9px' }}
       >
         BOOKMARKS
       </h3>
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-wrap gap-2">
         {bookmarks.map((bookmark) => (
           <a
             key={bookmark.id}
             href={bookmark.url}
-            className="quick-link-card flex flex-col items-center gap-2 p-3 transition-all"
+            className="quick-link-card flex items-center gap-2 px-3 py-2 transition-all"
             onContextMenu={(e) => handleContextMenu(e, bookmark)}
             style={{
-              '--hover-color': bookmark.color,
-              width: '80px',
+              '--hover-color': 'var(--pixel-gray)',
+              minWidth: '100px',
               backgroundColor: 'var(--pixel-dark)',
               boxShadow: `
                 -2px 0 0 0 var(--pixel-border),
@@ -94,19 +131,10 @@ export function BookmarkGrid() {
                 0 -2px 0 0 var(--pixel-border),
                 0 2px 0 0 var(--pixel-border)
               `,
+              textDecoration: 'none',
             } as React.CSSProperties}
           >
-            <div
-              className="pixel-font flex items-center justify-center"
-              style={{
-                width: '32px',
-                height: '32px',
-                fontSize: '16px',
-                color: bookmark.color,
-              }}
-            >
-              {bookmark.letter}
-            </div>
+            <BookmarkIcon bookmark={bookmark} />
             <span
               className="pixel-font"
               style={{ fontSize: '7px', color: 'var(--pixel-white)' }}
@@ -119,9 +147,9 @@ export function BookmarkGrid() {
         {/* Add button */}
         <button
           onClick={() => { setEditingBookmark(null); setModalOpen(true); }}
-          className="flex flex-col items-center justify-center gap-2 p-3 cursor-pointer transition-all"
+          className="flex items-center gap-2 px-3 py-2 cursor-pointer transition-all"
           style={{
-            width: '80px',
+            minWidth: '100px',
             backgroundColor: 'transparent',
             border: 'none',
             boxShadow: `
@@ -130,50 +158,14 @@ export function BookmarkGrid() {
               0 -2px 0 0 var(--pixel-border),
               0 2px 0 0 var(--pixel-border)
             `,
-            backgroundImage: `repeating-linear-gradient(
-              0deg,
-              var(--pixel-border),
-              var(--pixel-border) 4px,
-              transparent 4px,
-              transparent 8px
-            ),
-            repeating-linear-gradient(
-              90deg,
-              var(--pixel-border),
-              var(--pixel-border) 4px,
-              transparent 4px,
-              transparent 8px
-            ),
-            repeating-linear-gradient(
-              180deg,
-              var(--pixel-border),
-              var(--pixel-border) 4px,
-              transparent 4px,
-              transparent 8px
-            ),
-            repeating-linear-gradient(
-              270deg,
-              var(--pixel-border),
-              var(--pixel-border) 4px,
-              transparent 4px,
-              transparent 8px
-            )`,
-            backgroundSize: '2px 100%, 100% 2px, 2px 100%, 100% 2px',
-            backgroundPosition: '0 0, 0 0, 100% 0, 0 100%',
-            backgroundRepeat: 'no-repeat',
           }}
         >
-          <div
+          <span
             className="pixel-font flex items-center justify-center"
-            style={{
-              width: '32px',
-              height: '32px',
-              fontSize: '20px',
-              color: 'var(--pixel-gray)',
-            }}
+            style={{ width: '20px', height: '20px', fontSize: '14px', color: 'var(--pixel-gray)' }}
           >
             +
-          </div>
+          </span>
           <span
             className="pixel-font"
             style={{ fontSize: '7px', color: 'var(--pixel-gray)' }}

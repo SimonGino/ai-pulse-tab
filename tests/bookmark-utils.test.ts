@@ -1,7 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { BOOKMARK_COLORS } from '../core/constants.ts';
 import type { Bookmark } from '../core/types.ts';
 import {
   addBookmarkToList,
@@ -20,7 +19,6 @@ const existingBookmarks: Bookmark[] = [
     name: 'Claude',
     url: 'https://claude.ai',
     letter: 'C',
-    color: BOOKMARK_COLORS[0],
     order: 0,
   },
   {
@@ -28,7 +26,6 @@ const existingBookmarks: Bookmark[] = [
     name: 'ChatGPT',
     url: 'https://chatgpt.com',
     letter: 'G',
-    color: BOOKMARK_COLORS[1],
     order: 1,
   },
 ];
@@ -69,7 +66,6 @@ test('addBookmarkToList appends with fallback letter, color, and order from curr
     name: 'gemini',
     url: 'https://gemini.google.com',
     letter: 'G',
-    color: BOOKMARK_COLORS[2],
     order: 2,
   });
 });
