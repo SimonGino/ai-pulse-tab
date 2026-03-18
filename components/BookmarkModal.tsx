@@ -23,102 +23,40 @@ export function BookmarkModal({ bookmark, onSave, onClose }: BookmarkModalProps)
   };
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center"
-      style={{ backgroundColor: 'rgba(0, 0, 0, 0.7)' }}
-      onClick={onClose}
-    >
-      <div
-        className="pixel-border p-6 w-80"
-        style={{ backgroundColor: 'var(--pixel-dark)' }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <h3
-          className="pixel-font text-xs mb-4"
-          style={{ color: 'var(--pixel-white)' }}
-        >
-          {bookmark ? 'EDIT BOOKMARK' : 'ADD BOOKMARK'}
-        </h3>
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-title">
+          {bookmark ? 'Edit Bookmark' : 'Add Bookmark'}
+        </div>
 
-        {/* Name input */}
         <div className="mb-3">
-          <label
-            className="pixel-font block mb-1"
-            style={{ fontSize: '8px', color: 'var(--pixel-gray)' }}
-          >
-            NAME
-          </label>
+          <label className="modal-label">Name</label>
           <input
             type="text"
             value={name}
             onChange={(e) => { setName(e.target.value); setErrors((p) => ({ ...p, name: undefined })); }}
-            className="pixel-font w-full p-2 outline-none"
-            style={{
-              fontSize: '10px',
-              backgroundColor: 'var(--pixel-black)',
-              color: 'var(--pixel-white)',
-              border: 'none',
-              boxShadow: `
-                -2px 0 0 0 ${errors.name ? 'var(--pixel-red)' : 'var(--pixel-border)'},
-                2px 0 0 0 ${errors.name ? 'var(--pixel-red)' : 'var(--pixel-border)'},
-                0 -2px 0 0 ${errors.name ? 'var(--pixel-red)' : 'var(--pixel-border)'},
-                0 2px 0 0 ${errors.name ? 'var(--pixel-red)' : 'var(--pixel-border)'}
-              `,
-            }}
+            className={`modal-input ${errors.name ? 'error' : ''}`}
             placeholder="e.g. GitHub"
           />
-          {errors.name && (
-            <p className="pixel-font mt-1" style={{ fontSize: '7px', color: 'var(--pixel-red)' }}>
-              {errors.name}
-            </p>
-          )}
+          {errors.name && <div className="modal-error">{errors.name}</div>}
         </div>
 
-        {/* URL input */}
         <div className="mb-3">
-          <label
-            className="pixel-font block mb-1"
-            style={{ fontSize: '8px', color: 'var(--pixel-gray)' }}
-          >
-            URL
-          </label>
+          <label className="modal-label">URL</label>
           <input
             type="text"
             value={url}
             onChange={(e) => { setUrl(e.target.value); setErrors((p) => ({ ...p, url: undefined })); }}
-            className="pixel-font w-full p-2 outline-none"
-            style={{
-              fontSize: '10px',
-              backgroundColor: 'var(--pixel-black)',
-              color: 'var(--pixel-white)',
-              border: 'none',
-              boxShadow: `
-                -2px 0 0 0 ${errors.url ? 'var(--pixel-red)' : 'var(--pixel-border)'},
-                2px 0 0 0 ${errors.url ? 'var(--pixel-red)' : 'var(--pixel-border)'},
-                0 -2px 0 0 ${errors.url ? 'var(--pixel-red)' : 'var(--pixel-border)'},
-                0 2px 0 0 ${errors.url ? 'var(--pixel-red)' : 'var(--pixel-border)'}
-              `,
-            }}
+            className={`modal-input ${errors.url ? 'error' : ''}`}
             placeholder="https://..."
           />
-          {errors.url && (
-            <p className="pixel-font mt-1" style={{ fontSize: '7px', color: 'var(--pixel-red)' }}>
-              {errors.url}
-            </p>
-          )}
+          {errors.url && <div className="modal-error">{errors.url}</div>}
         </div>
 
-        {/* Buttons */}
-        <div className="flex gap-3 justify-end">
-          <button className="pixel-btn" onClick={onClose}>
-            CANCEL
-          </button>
-          <button
-            className="pixel-btn"
-            style={{ color: 'var(--pixel-white)' }}
-            onClick={handleSubmit}
-          >
-            {bookmark ? 'SAVE' : 'ADD'}
+        <div className="flex gap-2 justify-end">
+          <button className="modal-btn" onClick={onClose}>Cancel</button>
+          <button className="modal-btn modal-btn-primary" onClick={handleSubmit}>
+            {bookmark ? 'Save' : 'Add'}
           </button>
         </div>
       </div>
