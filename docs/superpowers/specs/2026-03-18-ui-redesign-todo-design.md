@@ -8,6 +8,9 @@
 
 Complete UI layer rewrite from pixel/retro theme to clean dark minimal aesthetic, plus new Todo list feature. All backend logic (probes, background service, types, data hooks) remains unchanged.
 
+### Tailwind CSS
+Tailwind CSS is **retained**. The new design uses CSS custom properties for the design system (colors, radii, fonts) and Tailwind utility classes for layout/spacing in JSX. The `@import "tailwindcss"` stays in `style.css`.
+
 ## Section 1: Design System
 
 ### Fonts
@@ -64,15 +67,23 @@ body (100vh, flex column, padding: 32px 40px, overflow: hidden)
 ```
 
 ### Greeting
-- Time format: "WEDNESDAY, MARCH 18 · 10:30 AM"
+- Time format: "WEDNESDAY, MARCH 18 · 10:30 AM" — updated every 60 seconds via `setInterval`
 - Greeting: hour-based (morning/afternoon/evening) + ", ready to build?"
+- Two-tone styling: the greeting prefix ("Good morning") uses `--t1`, the suffix ("ready to build?") uses `--t2` via a `<span>` wrapper
 
 ### Section Labels
 - Shared style: `font-size: 9px; font-weight: 600; letter-spacing: 1.6px; text-transform: uppercase; color: var(--t3)`
 - Followed by a flex line divider (`::after` pseudo-element, 0.5px height, `var(--bd)`)
 
+### Section Label Text
+- Left column: "AI usage"
+- Right column Speed Dial: "Speed dial"
+- Right column Todo: "Today's focus"
+- (All rendered uppercase via CSS `text-transform: uppercase`)
+
 ### Not-logged-in state
-- Left column shows login prompt; right column still shows Speed Dial + Todo normally
+- Left column always renders both Claude and ChatGPT cards. When a provider has no data (first install or not logged in), its card shows a login prompt with a link to the provider URL. The two-column grid layout is maintained regardless of data state.
+- Right column shows Speed Dial + Todo normally
 
 ## Section 3: Usage Cards (ProviderCard + QuotaBar)
 
@@ -85,20 +96,22 @@ body (100vh, flex column, padding: 32px 40px, overflow: hidden)
 
 ### QuotaBar (Segment Bar)
 - 16 segments, height: 5px, border-radius: 1px, gap: 1.5px
-- Color logic:
-  - Normal → brand color (`filled-cl` for Claude, `filled-gp` for ChatGPT)
-  - 50-75% → `--warn`
-  - 75%+ → `--danger`
-  - 0% → `rgba(255,255,255,0.12)`
-- Label row: left label (10px, --t2), right percentage (Space Mono 10px, color-coded)
+- **New prop:** `brandColor: string` — the provider's CSS variable name (e.g., `"var(--claude)"` or `"var(--gpt)"`)
+- Canonical color thresholds (replace current `QUOTA_THRESHOLDS` in `constants.ts`):
+  - 0% → `rgba(255,255,255,0.12)` (empty/low)
+  - 1-39% → brand color (normal)
+  - 40-74% → `--warn` (warning)
+  - 75%+ → `--danger` (danger)
+- Label row: left label (10px, --t2), right percentage (Space Mono 10px, color-coded by same thresholds)
 - Reset line: 8px, Space Mono, --t3, uppercase
 
 ### Preserved Logic
-- ProviderCard props interface unchanged
+- ProviderCard props interface unchanged (existing `color` prop now used for the brand dot in header)
 - Collapse/expand + persistence unchanged
 - Refresh message sending unchanged
 - OrgCard section rendering logic (plan, warning, session, weekly, models, extra) unchanged
 - ResetCountdown component preserved, only restyled
+- QuotaBar props interface adds `brandColor` — this is the only props change
 
 ## Section 4: Speed Dial (BookmarkGrid Redesign)
 
@@ -135,15 +148,14 @@ export interface TodoItem {
 ```
 
 ### New Storage Key (`core/constants.ts`)
-```ts
-STORAGE_KEYS.todos = 'todos'
-```
+Add `todos: 'todos'` to the `STORAGE_KEYS` object (adjust the `as const` assertion to allow the new key).
 
 ### New Hook (`hooks/useTodos.ts`)
 - Pattern: mirrors `useBookmarks` — load from `chrome.storage.local`, listen for changes, persist on mutation
 - Methods: `addTodo(text, priority)`, `toggleTodo(id)`, `deleteTodo(id)`
-- Midnight auto-clear: on load, remove completed todos where `createdAt` < start of today (local midnight)
-- Executes once per new tab open
+- Midnight auto-clear: on load, remove completed todos where `createdAt` < start of today (local midnight, using current timezone)
+- Executes once per new tab open — if a tab stays open past midnight, completed items remain until the next new tab is opened
+- No max todo count enforced (acceptable for a personal productivity tool)
 
 ### New Component (`components/TodoList.tsx`)
 
@@ -173,10 +185,12 @@ STORAGE_KEYS.todos = 'todos'
 | `components/ResetCountdown.tsx` | Edit | Restyle text |
 | `components/BookmarkGrid.tsx` | Edit | Redesign as Speed Dial grid |
 | `components/BookmarkModal.tsx` | Edit | Restyle modal to new design |
+| `components/provider-card-layout.ts` | Remove | No longer needed; new layout uses different styling approach |
 | `components/TodoList.tsx` | New | Todo list component |
 | `hooks/useTodos.ts` | New | Todo state management hook |
 | `core/types.ts` | Edit | Add `TodoItem` interface |
-| `core/constants.ts` | Edit | Update colors, add `todos` storage key |
+| `core/constants.ts` | Edit | Update colors, add `todos` storage key, update `QUOTA_THRESHOLDS` |
+| `tests/provider-card-layout.test.ts` | Remove | Tests for removed layout helper |
 
 ## Files NOT Changed
 
