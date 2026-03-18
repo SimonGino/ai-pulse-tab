@@ -4,6 +4,22 @@ import { useBookmarks } from '@/hooks/useBookmarks';
 import { BookmarkModal } from './BookmarkModal';
 import type { Bookmark } from '@/core/types';
 
+const FALLBACK_COLORS = [
+  { bg: 'rgba(212,132,90,0.15)', fg: 'var(--claude)' },
+  { bg: 'rgba(107,200,143,0.12)', fg: 'var(--gpt)' },
+  { bg: 'rgba(91,155,213,0.12)', fg: 'var(--blue)' },
+  { bg: 'rgba(226,92,92,0.12)', fg: 'var(--danger)' },
+  { bg: 'rgba(232,163,60,0.12)', fg: 'var(--warn)' },
+  { bg: 'rgba(140,120,200,0.12)', fg: '#a08cdc' },
+];
+
+function getBookmarkColor(bookmark: Bookmark, index: number) {
+  if (bookmark.color) {
+    return { bg: `${bookmark.color}20`, fg: bookmark.color };
+  }
+  return FALLBACK_COLORS[index % FALLBACK_COLORS.length];
+}
+
 function getFaviconUrl(bookmarkUrl: string): string | null {
   try {
     const { hostname } = new URL(bookmarkUrl);
@@ -13,31 +29,30 @@ function getFaviconUrl(bookmarkUrl: string): string | null {
   }
 }
 
-function BookmarkIcon({ bookmark }: { bookmark: Bookmark }) {
+function BookmarkIcon({ bookmark, index }: { bookmark: Bookmark; index: number }) {
   const [imgFailed, setImgFailed] = useState(false);
   const faviconUrl = getFaviconUrl(bookmark.url);
   const fallbackLetter = deriveBookmarkLetter(bookmark.name, bookmark.letter);
-
-  if (!faviconUrl || imgFailed) {
-    return (
-      <span
-        className="pixel-font flex items-center justify-center"
-        style={{ width: '20px', height: '20px', fontSize: '12px', color: 'var(--pixel-gray)' }}
-      >
-        {fallbackLetter}
-      </span>
-    );
-  }
+  const colors = getBookmarkColor(bookmark, index);
 
   return (
-    <img
-      src={faviconUrl}
-      alt=""
-      width={20}
-      height={20}
-      onError={() => setImgFailed(true)}
-      style={{ imageRendering: 'auto' }}
-    />
+    <div
+      className="dial-ico"
+      style={{ background: colors.bg, color: colors.fg }}
+    >
+      {faviconUrl && !imgFailed ? (
+        <img
+          src={faviconUrl}
+          alt=""
+          width={16}
+          height={16}
+          onError={() => setImgFailed(true)}
+          style={{ imageRendering: 'auto' }}
+        />
+      ) : (
+        fallbackLetter
+      )}
+    </div>
   );
 }
 
@@ -107,71 +122,27 @@ export function BookmarkGrid() {
   };
 
   return (
-    <div className="w-full">
-      <h3
-        className="pixel-font text-xs mb-3"
-        style={{ color: 'var(--pixel-gray)', fontSize: '9px' }}
-      >
-        BOOKMARKS
-      </h3>
-      <div className="flex flex-wrap gap-2">
-        {bookmarks.map((bookmark) => (
+    <div className="dial-section">
+      <div className="slabel">Speed dial</div>
+      <div className="dial-grid">
+        {bookmarks.map((bookmark, i) => (
           <a
             key={bookmark.id}
             href={bookmark.url}
-            className="quick-link-card flex items-center gap-2 px-3 py-2 transition-all"
+            className="dial-item"
             onContextMenu={(e) => handleContextMenu(e, bookmark)}
-            style={{
-              '--hover-color': 'var(--pixel-gray)',
-              minWidth: '100px',
-              backgroundColor: 'var(--pixel-dark)',
-              boxShadow: `
-                -2px 0 0 0 var(--pixel-border),
-                2px 0 0 0 var(--pixel-border),
-                0 -2px 0 0 var(--pixel-border),
-                0 2px 0 0 var(--pixel-border)
-              `,
-              textDecoration: 'none',
-            } as React.CSSProperties}
           >
-            <BookmarkIcon bookmark={bookmark} />
-            <span
-              className="pixel-font"
-              style={{ fontSize: '7px', color: 'var(--pixel-white)' }}
-            >
-              {bookmark.name}
-            </span>
+            <BookmarkIcon bookmark={bookmark} index={i} />
+            <div className="dial-lbl">{bookmark.name}</div>
           </a>
         ))}
 
-        {/* Add button */}
         <button
+          className="dial-item dial-add"
           onClick={() => { setEditingBookmark(null); setModalOpen(true); }}
-          className="flex items-center gap-2 px-3 py-2 cursor-pointer transition-all"
-          style={{
-            minWidth: '100px',
-            backgroundColor: 'transparent',
-            border: 'none',
-            boxShadow: `
-              -2px 0 0 0 var(--pixel-border),
-              2px 0 0 0 var(--pixel-border),
-              0 -2px 0 0 var(--pixel-border),
-              0 2px 0 0 var(--pixel-border)
-            `,
-          }}
         >
-          <span
-            className="pixel-font flex items-center justify-center"
-            style={{ width: '20px', height: '20px', fontSize: '14px', color: 'var(--pixel-gray)' }}
-          >
-            +
-          </span>
-          <span
-            className="pixel-font"
-            style={{ fontSize: '7px', color: 'var(--pixel-gray)' }}
-          >
-            ADD
-          </span>
+          <div className="dial-ico">+</div>
+          <div className="dial-lbl">Add</div>
         </button>
       </div>
 
@@ -179,62 +150,22 @@ export function BookmarkGrid() {
       {contextMenu && (
         <div
           ref={menuRef}
-          className="fixed z-50"
-          style={{
-            left: contextMenu.x,
-            top: contextMenu.y,
-            backgroundColor: 'var(--pixel-dark)',
-            boxShadow: `
-              -2px 0 0 0 var(--pixel-border),
-              2px 0 0 0 var(--pixel-border),
-              0 -2px 0 0 var(--pixel-border),
-              0 2px 0 0 var(--pixel-border)
-            `,
-          }}
+          className="ctx-menu"
+          style={{ left: contextMenu.x, top: contextMenu.y }}
         >
-          <button
-            className="pixel-font block w-full text-left px-4 py-2 text-xs hover:bg-[#2a2a4e]"
-            style={{ color: 'var(--pixel-white)', fontSize: '9px', border: 'none', background: 'none', cursor: 'pointer' }}
-            onClick={() => handleEdit(contextMenu.bookmark)}
-          >
-            EDIT
-          </button>
-          <button
-            className="pixel-font block w-full text-left px-4 py-2 text-xs hover:bg-[#2a2a4e]"
-            style={{ color: 'var(--pixel-red)', fontSize: '9px', border: 'none', background: 'none', cursor: 'pointer' }}
-            onClick={() => handleDeleteRequest(contextMenu.bookmark)}
-          >
-            DELETE
-          </button>
+          <button onClick={() => handleEdit(contextMenu.bookmark)}>Edit</button>
+          <button className="danger" onClick={() => handleDeleteRequest(contextMenu.bookmark)}>Delete</button>
         </div>
       )}
 
       {/* Delete Confirmation */}
       {confirmDelete && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center"
-          style={{ backgroundColor: 'rgba(0, 0, 0, 0.7)' }}
-          onClick={() => setConfirmDelete(null)}
-        >
-          <div
-            className="pixel-border p-6"
-            style={{ backgroundColor: 'var(--pixel-dark)' }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <p className="pixel-font text-xs mb-4" style={{ color: 'var(--pixel-white)' }}>
-              Delete "{confirmDelete.name}"?
-            </p>
-            <div className="flex gap-3 justify-end">
-              <button className="pixel-btn" onClick={() => setConfirmDelete(null)}>
-                CANCEL
-              </button>
-              <button
-                className="pixel-btn"
-                style={{ color: 'var(--pixel-red)' }}
-                onClick={handleConfirmDelete}
-              >
-                DELETE
-              </button>
+        <div className="modal-overlay" onClick={() => setConfirmDelete(null)}>
+          <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-title">Delete "{confirmDelete.name}"?</div>
+            <div className="flex gap-2 justify-end">
+              <button className="modal-btn" onClick={() => setConfirmDelete(null)}>Cancel</button>
+              <button className="modal-btn" style={{ color: 'var(--danger)' }} onClick={handleConfirmDelete}>Delete</button>
             </div>
           </div>
         </div>
