@@ -208,7 +208,7 @@ body {
 /* === Todo === */
 .todo-section { display: flex; flex-direction: column; flex: 1; min-height: 0; max-width: 420px; }
 .todo-cnt { font-size: 10px; color: var(--t3); font-family: 'Space Mono', monospace; margin-bottom: 6px; }
-.todo-inp-row { display: flex; gap: 4px; margin-bottom: 8px; flex-shrink: 0; }
+.todo-inp-row { display: flex; align-items: center; gap: 4px; margin-bottom: 8px; flex-shrink: 0; }
 .todo-inp {
   flex: 1;
   background: var(--inp);
@@ -268,7 +268,7 @@ body {
 .todo-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
 .todo-item {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 7px;
   padding: 6px 8px;
   border-radius: 6px;
@@ -287,7 +287,6 @@ body {
   align-items: center;
   justify-content: center;
   transition: all 0.2s;
-  margin-top: 1px;
 }
 .t-chk:hover { border-color: var(--t2); }
 .t-chk.dn { background: var(--gpt); border-color: var(--gpt); }
@@ -309,7 +308,6 @@ body {
   border-radius: 2px;
   letter-spacing: 0.3px;
   flex-shrink: 0;
-  margin-top: 2px;
 }
 .tp-h { background: rgba(226,92,92,0.12); color: var(--danger); }
 .tp-m { background: rgba(232,163,60,0.1); color: var(--warn); }
