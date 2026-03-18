@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 interface ResetCountdownProps {
-  resetAt: string; // ISO string
+  resetAt: string;
 }
 
 function formatCountdown(resetAt: string): string {
@@ -28,12 +28,5 @@ export function ResetCountdown({ resetAt }: ResetCountdownProps) {
     return () => clearInterval(timer);
   }, [resetAt]);
 
-  return (
-    <span
-      className="data-font"
-      style={{ fontSize: '10px', color: 'var(--pixel-reset-text)' }}
-    >
-      RESET: {text}
-    </span>
-  );
+  return <div className="u-reset">Reset: {text}</div>;
 }
