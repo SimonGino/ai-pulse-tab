@@ -423,4 +423,68 @@ body {
   cursor: pointer;
   transition: color 0.15s;
 }
+
+/* === Theme Toggle Button === */
+.theme-toggle {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: var(--card);
+  border: 0.5px solid var(--bd);
+  font-size: 14px;
+  color: var(--t2);
+  cursor: pointer;
+  transition: all 0.15s;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+.theme-toggle:hover { background: var(--card-h); }
+
+/* === Light Theme === */
+[data-theme="light"] {
+  --bg: #ffffff;
+  --card: #fafafa;
+  --card-h: #f0f0f0;
+  --inp: #f5f5f5;
+  --t1: #111111;
+  --t2: #999999;
+  --t3: #bbbbbb;
+  --bd: #eeeeee;
+}
+
+[data-theme="light"] .seg.empty { background: rgba(0,0,0,0.06); }
+
+[data-theme="light"] .usage-col::-webkit-scrollbar-thumb,
+[data-theme="light"] .right-col::-webkit-scrollbar-thumb,
+[data-theme="light"] .todo-list::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); }
+
+[data-theme="light"] .todo-item:hover { background: rgba(0,0,0,0.03); }
+
+[data-theme="light"] .dial-add { border: 1px dashed rgba(0,0,0,0.12); }
+[data-theme="light"] .dial-add .dial-ico { background: rgba(0,0,0,0.04); }
+
+[data-theme="light"] .pri-btn.sel { outline: 1.5px solid rgba(0,0,0,0.2); }
+
+[data-theme="light"] .todo-inp:focus { border-color: rgba(0,0,0,0.15); }
+[data-theme="light"] .modal-input:focus { border-color: rgba(0,0,0,0.15); }
+
+[data-theme="light"] .u-refresh:hover { background: rgba(0,0,0,0.04); }
+
+[data-theme="light"] .todo-add { background: rgba(0,0,0,0.04); }
+[data-theme="light"] .todo-add:hover { background: rgba(0,0,0,0.06); }
+
+[data-theme="light"] .ctx-menu button:hover { background: rgba(0,0,0,0.04); }
+
+[data-theme="light"] .modal-btn:hover { background: rgba(0,0,0,0.04); }
+[data-theme="light"] .modal-btn-primary { background: rgba(0,0,0,0.08); }
+
+[data-theme="light"] .t-chk.dn::after {
+  border-left-color: #ffffff;
+  border-bottom-color: #ffffff;
+}
+
+[data-theme="light"] .modal-overlay { background: rgba(0,0,0,0.4); }
 .collapse-btn:hover { color: var(--t2); }
