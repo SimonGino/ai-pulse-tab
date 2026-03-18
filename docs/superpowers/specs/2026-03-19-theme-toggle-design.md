@@ -5,7 +5,7 @@
 
 ## Overview
 
-Add a three-mode theme toggle (dark / light / system) to the new tab page. Uses CSS variable overrides via `data-theme` attribute on `<html>`. Persisted in `chrome.storage.local`. Includes a flash-prevention inline script in `index.html`.
+Add a three-mode theme toggle (dark / light / system) to the new tab page. Uses CSS variable overrides via `data-theme` attribute on `<html>`. Persisted in `chrome.storage.local`. Includes a flash-prevention external script loaded before React.
 
 ## Section 1: Light Theme Color Palette
 
@@ -29,7 +29,7 @@ Dark theme (existing `:root`) remains the default. Light theme applied via `[dat
 Some component styles use hardcoded `rgba(255,255,255,...)` values (e.g., scrollbar thumbs, segment bar empties, todo hover, priority button backgrounds). These need light-mode specific overrides since white-on-white is invisible:
 
 - `.seg.empty` background: `rgba(0,0,0,0.06)` (was `rgba(255,255,255,0.05)`)
-- Scrollbar thumbs: `rgba(0,0,0,0.12)` (was `rgba(255,255,255,0.1)`)
+- `.usage-col::-webkit-scrollbar-thumb`, `.right-col::-webkit-scrollbar-thumb`, `.todo-list::-webkit-scrollbar-thumb`: `rgba(0,0,0,0.12)` (was `rgba(255,255,255,0.1)`)
 - `.todo-item:hover` background: `rgba(0,0,0,0.03)` (was `rgba(255,255,255,0.03)`)
 - `.dial-add` border: `1px dashed rgba(0,0,0,0.12)` (was `rgba(255,255,255,0.08)`)
 - `.dial-add .dial-ico` background: `rgba(0,0,0,0.04)` (was `rgba(255,255,255,0.04)`)
@@ -37,10 +37,11 @@ Some component styles use hardcoded `rgba(255,255,255,...)` values (e.g., scroll
 - `.todo-inp:focus` border-color: `rgba(0,0,0,0.15)` (was `rgba(255,255,255,0.15)`)
 - `.modal-input:focus` border-color: `rgba(0,0,0,0.15)` (was `rgba(255,255,255,0.15)`)
 - `.u-refresh:hover` background: `rgba(0,0,0,0.04)` (was `rgba(255,255,255,0.06)`)
+- `.todo-add` background: `rgba(0,0,0,0.04)` (was `rgba(255,255,255,0.06)`)
 - `.todo-add:hover` background: `rgba(0,0,0,0.06)` (was `rgba(255,255,255,0.1)`)
 - `.ctx-menu button:hover` background: `rgba(0,0,0,0.04)` (was `rgba(255,255,255,0.04)`)
 - `.modal-btn:hover` background: `rgba(0,0,0,0.04)` (was `rgba(255,255,255,0.06)`)
-- `.modal-btn-primary` background: `rgba(0,0,0,0.04)` (was `rgba(255,255,255,0.06)`)
+- `.modal-btn-primary` background: `rgba(0,0,0,0.08)` (was `rgba(255,255,255,0.06)`) — slightly stronger for contrast
 - `.t-chk.dn::after` border-color: `#ffffff` (was `#0c0f14`) — checkmark contrasts with green background
 - `.modal-overlay` background: `rgba(0,0,0,0.4)` (was `rgba(0,0,0,0.7)`) — lighter overlay in light mode
 
@@ -52,14 +53,25 @@ New key in `STORAGE_KEYS`: `theme: 'theme'`
 
 Value: `'dark' | 'light' | 'system'`, default `'dark'`
 
-### Flash Prevention (index.html inline script)
+### New Type (`core/types.ts`)
 
-A synchronous inline `<script>` in `<head>`, before React loads, that:
-1. Reads theme from `chrome.storage.local` (via synchronous-looking approach: actually uses the WXT `browser.storage.local.get` which returns a Promise, but since this is a Chrome extension new tab, we can set the attribute in a microtask before first paint)
-2. If `system`, checks `window.matchMedia('(prefers-color-scheme: light)').matches`
-3. Sets `document.documentElement.dataset.theme` to the resolved value (`'dark'` or `'light'`)
+Add `export type Theme = 'dark' | 'light' | 'system';` for reuse by hook and component.
 
-Note: Since `chrome.storage.local.get` is async, we set `data-theme="dark"` as the default in HTML and update it as soon as storage resolves. For most users this is near-instantaneous and won't flash.
+### Flash Prevention (external script — MV3 CSP compliant)
+
+Chrome Manifest V3 prohibits inline `<script>` tags in extension pages (`script-src 'self'`). Instead, use an **external script file** loaded in `<head>` before React:
+
+**New file: `entrypoints/newtab/theme-init.ts`** (WXT will bundle it)
+
+Referenced in `index.html` as `<script src="./theme-init.js"></script>` before the React module script.
+
+The script:
+1. Sets `<html data-theme="dark">` as immediate default (via the HTML attribute)
+2. Reads theme preference from `chrome.storage.local`
+3. If `system`, checks `window.matchMedia('(prefers-color-scheme: light)').matches`
+4. Sets `document.documentElement.dataset.theme` to the resolved value
+
+Since `chrome.storage.local.get` is async, there may be a brief dark flash for light-mode users. To mitigate: the `<html>` tag starts with `data-theme="dark"` and the script resolves within a microtask before first paint in most cases.
 
 ### React Hook (`hooks/useTheme.ts`)
 
@@ -83,7 +95,7 @@ Note: Since `chrome.storage.local.get` is async, we set `data-theme="dark"` as t
 
 ### Position & Layout
 
-Absolute-positioned in the top-right corner of the page. Does not affect existing flex/grid layout.
+Placed in the top-right via a flex wrapper around the greeting area. Not absolute-positioned — participates in document flow.
 
 Add a wrapper in `App.tsx` around the greeting area:
 ```
@@ -98,6 +110,7 @@ Add a wrapper in `App.tsx` around the greeting area:
 - Renders a small icon button
 - Click cycles: `dark → light → system → dark → ...`
 - Uses `useTheme` hook
+- Includes `aria-label` that updates with current mode (e.g., "Theme: dark, click to switch")
 
 ### Icons (text-based, no SVG dependencies)
 
@@ -125,13 +138,16 @@ Add a wrapper in `App.tsx` around the greeting area:
 | File | Action | Description |
 |------|--------|-------------|
 | `entrypoints/newtab/style.css` | Edit | Add `[data-theme="light"]` overrides + `.theme-toggle` class |
-| `entrypoints/newtab/index.html` | Edit | Add inline theme script in `<head>`, set default `data-theme="dark"` on `<html>` |
+| `entrypoints/newtab/index.html` | Edit | Add theme-init script reference in `<head>`, set `data-theme="dark"` on `<html>` |
+| `entrypoints/newtab/theme-init.ts` | New | Flash-prevention script (reads storage, sets data-theme before React) |
 | `entrypoints/newtab/App.tsx` | Edit | Add ThemeToggle to greeting area layout |
 | `hooks/useTheme.ts` | New | Theme state management hook |
 | `components/ThemeToggle.tsx` | New | Toggle button component |
+| `core/types.ts` | Edit | Add `Theme` type |
 | `core/constants.ts` | Edit | Add `theme` to `STORAGE_KEYS` |
 
 ## Files NOT Changed
 
 - All probe files, background.ts, existing hooks, existing component logic
 - Only UI layer + new hook/component
+- Note: `BookmarkGrid.tsx` has a hardcoded `#a08cdc` purple in `FALLBACK_COLORS` — reviewed and acceptable in both themes (sufficient contrast on both dark and light card backgrounds)
