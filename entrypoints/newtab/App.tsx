@@ -3,6 +3,7 @@ import { useUsageData } from '@/hooks/useUsageData';
 import { ProviderCard } from '@/components/ProviderCard';
 import { BookmarkGrid } from '@/components/BookmarkGrid';
 import { TodoList } from '@/components/TodoList';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { PROVIDERS } from '@/core/constants';
 
 function getGreeting(): string {
@@ -62,7 +63,10 @@ export default function App() {
 
   return (
     <>
-      <Greeting />
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <Greeting />
+        <ThemeToggle />
+      </div>
 
       <div className="main">
         {/* Left: Usage Column */}
