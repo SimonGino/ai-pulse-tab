@@ -3,10 +3,6 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { updateCollapsedProvidersMap } from '@/core/bookmark-utils';
 import type { UsageData } from '@/core/types';
 import { STORAGE_KEYS } from '@/core/constants';
-import {
-  getOrgCardSectionContainerClassName,
-  getOrgCardSectionContentMarginTop,
-} from './provider-card-layout';
 import { QuotaBar } from './QuotaBar';
 import { ResetCountdown } from './ResetCountdown';
 
@@ -27,56 +23,34 @@ interface ProviderCardProps {
   lastUpdated?: number;
 }
 
-function OrgCard({ data, loginUrl }: { data: UsageData; loginUrl?: string }) {
+function OrgCard({ data, loginUrl, brandColor, showPlan = true }: { data: UsageData; loginUrl?: string; brandColor: string; showPlan?: boolean }) {
   if (data.authStatus.status !== 'authenticated') {
-    const url = loginUrl ?? 'https://claude.ai';
+    const url = loginUrl ?? '#';
     return (
-      <div
-        className="p-3"
-        style={{ backgroundColor: 'var(--pixel-dark)' }}
-      >
-        <p className="text-sm" style={{ color: 'var(--pixel-white)' }}>
-          {data.authStatus.status === 'expired'
-            ? `Please re-login to ${url}`
-            : `Please login to ${url}`}
-        </p>
-        <a
-          href={url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="pixel-font text-xs mt-1 inline-block"
-          style={{ color: 'var(--pixel-white)' }}
-        >
-          LOGIN →
+      <div style={{ fontSize: '10px', color: 'var(--t3)', fontStyle: 'italic' }}>
+        <a href={url} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--t2)', textDecoration: 'none' }}>
+          {data.authStatus.status === 'expired' ? 'Session expired — re-login →' : 'Login to see usage →'}
         </a>
       </div>
     );
   }
 
-  const divider = (
-    <div style={{ height: '1px', backgroundColor: 'var(--pixel-border)', opacity: 0.5 }} />
-  );
-
   const sections: ReactNode[] = [];
 
-  if (data.plan) {
+  if (data.plan && showPlan) {
     sections.push(
-      <p key="plan" className="data-font text-xs" style={{ color: 'var(--pixel-gray)' }}>
-        Plan: {data.plan}
-      </p>
+      <span key="plan" className="u-plan">{data.plan}</span>
     );
   }
   if (data.warning) {
     sections.push(
-      <p key="warning" className="data-font text-xs" style={{ color: 'var(--pixel-red)' }}>
-        {data.warning}
-      </p>
+      <div key="warning" style={{ fontSize: '10px', color: 'var(--danger)' }}>{data.warning}</div>
     );
   }
   if (data.session) {
     sections.push(
       <div key="session">
-        <QuotaBar used={data.session.used} label={data.session.label ?? 'Session'} />
+        <QuotaBar used={data.session.used} label={data.session.label ?? 'Session'} brandColor={brandColor} />
         {data.session.resetAt && <ResetCountdown resetAt={data.session.resetAt} />}
       </div>
     );
@@ -84,8 +58,16 @@ function OrgCard({ data, loginUrl }: { data: UsageData; loginUrl?: string }) {
   if (data.weekly) {
     sections.push(
       <div key="weekly">
-        <QuotaBar used={data.weekly.used} label={data.weekly.label ?? 'Weekly'} />
+        <QuotaBar used={data.weekly.used} label={data.weekly.label ?? 'Weekly'} brandColor={brandColor} />
         {data.weekly.resetAt && <ResetCountdown resetAt={data.weekly.resetAt} />}
+      </div>
+    );
+  }
+  if (data.daily) {
+    sections.push(
+      <div key="daily">
+        <QuotaBar used={data.daily.used} label={data.daily.label ?? 'Daily'} brandColor={brandColor} />
+        {data.daily.resetAt && <ResetCountdown resetAt={data.daily.resetAt} />}
       </div>
     );
   }
@@ -93,7 +75,7 @@ function OrgCard({ data, loginUrl }: { data: UsageData; loginUrl?: string }) {
     for (const m of data.models) {
       sections.push(
         <div key={m.model}>
-          <QuotaBar used={m.used} label={m.model} tooltip={m.tooltip} />
+          <QuotaBar used={m.used} label={m.model} brandColor={brandColor} tooltip={m.tooltip} />
           {m.resetAt && <ResetCountdown resetAt={m.resetAt} />}
         </div>
       );
@@ -101,20 +83,15 @@ function OrgCard({ data, loginUrl }: { data: UsageData; loginUrl?: string }) {
   }
   if (data.extra) {
     sections.push(
-      <p key="extra" className="data-font text-xs" style={{ color: 'var(--pixel-gray)' }}>
+      <div key="extra" style={{ fontSize: '9px', fontFamily: "'Space Mono', monospace", color: 'var(--t3)' }}>
         Extra: ${data.extra.spent.toFixed(2)} / ${data.extra.limit.toFixed(2)}
-      </p>
+      </div>
     );
   }
 
   return (
-    <div className={getOrgCardSectionContainerClassName()}>
-      {sections.map((section, i) => (
-        <div key={i}>
-          {i > 0 && divider}
-          <div style={{ marginTop: getOrgCardSectionContentMarginTop(i) }}>{section}</div>
-        </div>
-      ))}
+    <div className="flex flex-col gap-1.5">
+      {sections}
     </div>
   );
 }
@@ -145,6 +122,7 @@ export function ProviderCard({
   const [refreshing, setRefreshing] = useState(false);
   const collapsedRef = useRef(false);
   const persistQueueRef = useRef<Promise<void>>(Promise.resolve());
+  const brandColor = color ? `var(--${providerId === 'claude' ? 'claude' : 'gpt'})` : 'var(--t2)';
 
   useEffect(() => {
     let active = true;
@@ -152,19 +130,14 @@ export function ProviderCard({
     browser.storage.local
       .get(STORAGE_KEYS.collapsedProviders)
       .then((result: Record<string, unknown>) => {
-        if (!active) {
-          return;
-        }
-
+        if (!active) return;
         const map = (result[STORAGE_KEYS.collapsedProviders] ?? {}) as Record<string, boolean>;
         const storedCollapsed = Boolean(map[providerName]);
         collapsedRef.current = storedCollapsed;
         setCollapsed(storedCollapsed);
       });
 
-    return () => {
-      active = false;
-    };
+    return () => { active = false; };
   }, [providerName]);
 
   const persistCollapsedState = useCallback(
@@ -191,8 +164,6 @@ export function ProviderCard({
     collapsedRef.current = next;
     setCollapsed(next);
     void persistCollapsedState(next);
-
-    // When expanding a collapsed provider, trigger immediate refresh
     if (!next) {
       void browser.runtime.sendMessage({ type: 'REFRESH_PROVIDER', providerId });
     }
@@ -211,41 +182,14 @@ export function ProviderCard({
   };
 
   return (
-    <div
-      className="pixel-border p-5 w-full"
-      style={{ backgroundColor: 'var(--pixel-dark)' }}
-    >
-      <div
-        className="flex items-center gap-2 select-none"
-        style={{ marginBottom: collapsed ? 0 : '12px' }}
-      >
-        <a
-          href={loginUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="pixel-font text-sm flex-1"
-          style={{ color: 'var(--pixel-white)', textDecoration: 'none' }}
-          onClick={(e) => e.stopPropagation()}
-        >
-          {providerName}
-        </a>
+    <div className="u-card">
+      <div className="u-head" style={{ marginBottom: collapsed ? 0 : '8px' }}>
+        <div className="u-dot" style={{ background: color }} />
+        <div className="u-brand">{providerName}</div>
         {collapsed && (
-          <span className="data-font" style={{ fontSize: '10px', color: 'var(--pixel-gray)' }}>
-            Peak: {getHighestUsage(usageDataList)}
-          </span>
+          <span className="u-ago">Peak: {getHighestUsage(usageDataList)}</span>
         )}
-        <button
-          onClick={toggleCollapse}
-          className="pixel-font cursor-pointer"
-          style={{
-            fontSize: '10px',
-            color: 'var(--pixel-gray)',
-            lineHeight: 1,
-            background: 'none',
-            border: 'none',
-            padding: '4px 8px',
-          }}
-        >
+        <button className="collapse-btn" onClick={toggleCollapse}>
           {collapsed ? '▶' : '▼'}
         </button>
       </div>
@@ -253,41 +197,26 @@ export function ProviderCard({
       {!collapsed && (
         <>
           {isSingleOrg ? (
-            <OrgCard data={usageDataList[0]} loginUrl={loginUrl} />
+            <OrgCard data={usageDataList[0]} loginUrl={loginUrl} brandColor={brandColor} />
           ) : (
-            <div className="space-y-3">
-              {usageDataList.map((data) => (
-                <div
-                  key={data.orgId}
-                  className="p-3"
-                  style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}
-                >
-                  <p
-                    className="data-font text-xs mb-2 font-medium"
-                    style={{ color: 'var(--pixel-white)' }}
-                  >
-                    {data.orgName}
-                  </p>
-                  <OrgCard data={data} loginUrl={loginUrl} />
+            <div>
+              {usageDataList.map((data, i) => (
+                <div key={data.orgId}>
+                  {i > 0 && <div className="u-sep" />}
+                  <div className="u-org">{data.orgName}</div>
+                  {data.plan && <div className="u-org-plan">Plan: {data.plan}</div>}
+                  <OrgCard data={data} loginUrl={loginUrl} brandColor={brandColor} showPlan={false} />
                 </div>
               ))}
             </div>
           )}
 
-          {/* Per-card refresh */}
-          <div className="flex items-center gap-3 mt-3">
-            <button
-              onClick={handleRefresh}
-              disabled={refreshing}
-              className="pixel-btn"
-              style={{ fontSize: '8px', padding: '4px 10px' }}
-            >
-              {refreshing ? '...' : 'REFRESH'}
+          <div className="u-foot">
+            <button className="u-refresh" onClick={handleRefresh} disabled={refreshing}>
+              {refreshing ? '...' : 'Refresh'}
             </button>
             {lastUpdated != null && lastUpdated > 0 && (
-              <span className="data-font" style={{ fontSize: '9px', color: 'var(--pixel-reset-text)' }}>
-                {formatRelativeTime(lastUpdated)}
-              </span>
+              <span className="u-ago">{formatRelativeTime(lastUpdated)}</span>
             )}
           </div>
         </>
