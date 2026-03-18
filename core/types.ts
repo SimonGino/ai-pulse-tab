@@ -52,3 +52,11 @@ export interface Bookmark {
   order: number;
 }
 
+export interface TodoItem {
+  id: string;
+  text: string;
+  done: boolean;
+  priority: 'high' | 'med' | 'low';
+  createdAt: number;
+}
+
