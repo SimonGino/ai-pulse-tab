@@ -60,3 +60,5 @@ export interface TodoItem {
   createdAt: number;
 }
 
+export type Theme = 'dark' | 'light' | 'system';
+

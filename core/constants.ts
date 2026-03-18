@@ -27,6 +27,7 @@ export const STORAGE_KEYS = {
   bookmarks: 'bookmarks',
   collapsedProviders: 'collapsedProviders',
   todos: 'todos',
+  theme: 'theme',
 } as const;
 
 export const DEFAULT_BOOKMARKS = [
