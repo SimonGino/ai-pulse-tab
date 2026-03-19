@@ -9,9 +9,11 @@ const PRIORITY_LABELS: Record<TodoItem['priority'], string> = {
 };
 
 export function TodoList() {
-  const { todos, addTodo, toggleTodo, deleteTodo } = useTodos();
+  const { todos, addTodo, toggleTodo, deleteTodo, editTodo } = useTodos();
   const [input, setInput] = useState('');
   const [priority, setPriority] = useState<TodoItem['priority']>('high');
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editText, setEditText] = useState('');
 
   const handleAdd = () => {
     const text = input.trim();
@@ -69,7 +71,40 @@ export function TodoList() {
               onClick={() => toggleTodo(todo.id)}
               onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleTodo(todo.id); } }}
             />
-            <span className={`t-txt ${todo.done ? 'dn' : ''}`}>{todo.text}</span>
+            {editingId === todo.id ? (
+              <input
+                className="todo-inp"
+                style={{ fontSize: '11px', padding: '2px 6px', height: 'auto' }}
+                value={editText}
+                onChange={(e) => setEditText(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    const trimmed = editText.trim();
+                    if (trimmed) editTodo(todo.id, trimmed);
+                    setEditingId(null);
+                  }
+                  if (e.key === 'Escape') setEditingId(null);
+                }}
+                onBlur={() => {
+                  const trimmed = editText.trim();
+                  if (trimmed) editTodo(todo.id, trimmed);
+                  setEditingId(null);
+                }}
+                autoFocus
+              />
+            ) : (
+              <span
+                className={`t-txt ${todo.done ? 'dn' : ''}`}
+                onDoubleClick={() => {
+                  if (!todo.done) {
+                    setEditingId(todo.id);
+                    setEditText(todo.text);
+                  }
+                }}
+              >
+                {todo.text}
+              </span>
+            )}
             <span className={`t-pri tp-${todo.priority[0]}`}>
               {PRIORITY_LABELS[todo.priority]}
             </span>

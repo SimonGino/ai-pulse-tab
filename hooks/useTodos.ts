@@ -89,8 +89,17 @@ export function useTodos() {
     [applyTodos],
   );
 
+  const editTodo = useCallback(
+    (id: string, text: string) => {
+      applyTodos((current) =>
+        current.map((t) => (t.id === id ? { ...t, text } : t)),
+      );
+    },
+    [applyTodos],
+  );
+
   // Sort: incomplete first, completed last
   const sorted = [...todos].sort((a, b) => Number(a.done) - Number(b.done));
 
-  return { todos: sorted, addTodo, toggleTodo, deleteTodo };
+  return { todos: sorted, addTodo, toggleTodo, deleteTodo, editTodo };
 }
