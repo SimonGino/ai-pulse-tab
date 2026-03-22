@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog, and this project follows Semantic Versioning.
 
+## [0.1.2] - 2026-03-22
+
+### Added
+
+- UI redesign with modern minimal style, replacing retro pixel-art theme.
+- Two-column layout: AI usage (left), Speed Dial + Todo (right).
+- Greeting header with time-based messages.
+- Todo list with High/Medium/Low priority levels and midnight auto-clear.
+- Inline editing for todo items via double-click.
+- Dark / Light / System theme toggle with OS preference detection.
+- Store listing configuration file (`docs/store/STORE_LISTING.md`).
+
 ## [0.1.1] - 2026-03-13
 
 ### Fixed
