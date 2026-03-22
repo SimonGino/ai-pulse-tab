@@ -31,7 +31,7 @@ AI Pulse Tab replaces your new tab page with a clean dashboard that shows your A
   ► Color-coded progress bars — green when fresh, yellow at 50%, red at 80%
   ► Reset countdown timer so you always know when your limits refresh
   ► Customizable bookmarks grid — add, edit, or remove quick links to your favorite sites
-  ► Daily todo list with priority levels — auto-clears at midnight
+  ► Daily todo list with priority levels and inline editing — auto-clears at midnight
   ► Dark / Light / System theme toggle with OS preference detection
   ► Auto-refreshes usage data every 5 minutes in the background
 
@@ -122,7 +122,7 @@ AI Pulse Tab replaces your new tab page with a clean dashboard that shows your A
 #### 主机权限 (host_permissions)
 
 ```
-需要访问 https://claude.ai 和 https://chatgpt.com 的 API 接口，以获取用户当前的会话配额、周配额、模型用量等数据。这两个域名是扩展核心功能所必需的仅有的外部域名，不访问其他任何网站。
+需要访问 https://claude.ai 和 https://chatgpt.com 的 API 接口，以获取用户当前的会话配额、周配额、模型用量等数据。此外，扩展通过标准 HTML 标签加载 Google Fonts 字体和 Google Favicon 服务获取书签图标，这些请求不涉及用户数据。
 ```
 
 ### 远程代码
