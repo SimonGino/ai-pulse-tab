@@ -28,10 +28,10 @@ Four sections matching the Chrome Web Store Dashboard pages:
    - Language — "English (US)"
 
 2. **图片资源 (Image Assets)**
-   - Store icon — spec + file path (`public/icon/128.png`)
-   - Screenshots — spec + relative file paths in `docs/store/`
-   - Small promo tile — spec + file path
-   - Marquee promo tile — spec + file path
+   - Store icon — spec + file path (`public/icon/store-128.png`)
+   - Screenshots — 1-5 张, 1280x800 or 640x400, relative file paths in `docs/store/`
+   - Small promo tile (440x280) — spec + file path
+   - Marquee promo tile (1400x560) — spec + file path
    - Promo video — YouTube URL (optional)
 
 3. **其他字段 (Other Fields)**
@@ -41,7 +41,10 @@ Four sections matching the Chrome Web Store Dashboard pages:
 
 4. **隐私权 (Privacy)**
    - Single purpose statement
-   - Permission justifications — one subsection per permission (storage, alarms, host permissions)
+   - Permission justifications — one subsection per permission:
+     - `storage`
+     - `alarms`
+     - `host_permissions`: split by domain (`https://claude.ai/*`, `https://chatgpt.com/*`)
    - Remote code declaration
 
 ### Design Decisions
@@ -51,6 +54,7 @@ Four sections matching the Chrome Web Store Dashboard pages:
 - **Manifest sync annotations**: Title and summary come from `wxt.config.ts` → manifest.json. Annotating these fields reminds maintainers to keep them in sync.
 - **Inline full text**: Description and permission justifications are written as full text blocks (not abbreviated), so they can be directly copied into Dashboard input fields.
 - **Relative file paths for assets**: Screenshot and promo image paths point to actual files in the repo for easy verification.
+- **Store-specific icon**: Use `store-128.png` (dedicated store version) rather than `128.png` (extension runtime icon).
 
 ### Content Updates Needed
 
