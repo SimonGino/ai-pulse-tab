@@ -66,20 +66,30 @@ export function TodoCard({ todo, onMove, onDelete, onEdit }: TodoCardProps) {
       {...attributes}
       {...(editing ? {} : listeners)}
     >
-      <button
-        className="card-del"
-        onClick={(e) => { e.stopPropagation(); onDelete(todo.id); }}
-        aria-label="Delete task"
-      >
-        ×
-      </button>
-
       <div className="card-header">
-        <span className="card-num">#{todo.number}</span>
-        <div className="card-header-right">
+        <div className="card-header-left">
+          <span className="card-num">#{todo.number}</span>
           <span className={`card-pri cp-${todo.priority[0]}`}>
             {PRIORITY_LABELS[todo.priority]}
           </span>
+        </div>
+        <div className="card-header-btns">
+          {todo.status !== 'done' && (
+            <button
+              className="card-btn"
+              onClick={(e) => { e.stopPropagation(); handleDoubleClick(); }}
+              aria-label="Edit task"
+            >
+              ✎
+            </button>
+          )}
+          <button
+            className="card-btn card-btn-del"
+            onClick={(e) => { e.stopPropagation(); onDelete(todo.id); }}
+            aria-label="Delete task"
+          >
+            ×
+          </button>
         </div>
       </div>
 
@@ -112,18 +122,6 @@ export function TodoCard({ todo, onMove, onDelete, onEdit }: TodoCardProps) {
             aria-label={`Move to ${STATUS_ORDER[statusIdx - 1]}`}
           >
             ←
-          </button>
-        )}
-        {todo.status !== 'done' && (
-          <button
-            className="card-edit-btn"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleDoubleClick();
-            }}
-            aria-label="Edit task"
-          >
-            ✎
           </button>
         )}
         <div style={{ flex: 1 }} />

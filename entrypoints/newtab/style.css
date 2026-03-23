@@ -339,25 +339,29 @@ body {
 .kanban-card.done { opacity: 0.6; }
 .kanban-card:active { cursor: grabbing; }
 
-.card-del {
-  position: absolute;
-  top: 6px;
-  right: 6px;
+.card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+.card-header-left { display: flex; align-items: center; gap: 5px; }
+.card-header-btns {
+  display: flex;
+  align-items: center;
+  gap: 4px;
   opacity: 0;
-  font-size: 12px;
+  transition: opacity 0.15s;
+}
+.kanban-card:hover .card-header-btns { opacity: 1; }
+.card-btn {
+  font-size: 10px;
   color: var(--t3);
   cursor: pointer;
-  padding: 0 2px;
-  background: none;
+  padding: 1px 4px;
+  background: rgba(255,255,255,0.04);
   border: none;
+  border-radius: 3px;
   transition: all 0.15s;
   line-height: 1;
 }
-.kanban-card:hover .card-del { opacity: 1; }
-.card-del:hover { color: var(--danger); }
-
-.card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; padding-right: 16px; }
-.card-header-right { display: flex; align-items: center; gap: 4px; }
+.card-btn:hover { background: rgba(255,255,255,0.08); color: var(--t2); }
+.card-btn-del:hover { color: var(--danger); }
 .card-num { font-size: 8px; color: var(--t3); }
 .card-pri {
   font-size: 7px;
@@ -409,19 +413,6 @@ body {
 .move-done { color: var(--gpt); }
 .move-done:hover { background: rgba(107,200,143,0.12); }
 
-.card-edit-btn {
-  font-size: 9px;
-  cursor: pointer;
-  padding: 1px 6px;
-  border-radius: 4px;
-  background: rgba(255,255,255,0.04);
-  border: none;
-  transition: all 0.15s;
-  color: var(--t3);
-  font-family: 'DM Sans', sans-serif;
-}
-.card-edit-btn:hover { background: rgba(255,255,255,0.08); color: var(--t2); }
-
 /* Pri buttons (shared, keep from old CSS) */
 .pri-btns { display: flex; gap: 2px; flex-shrink: 0; }
 .pri-btn {
@@ -467,6 +458,8 @@ body {
 [data-theme="light"] .pri-btn.sel { outline-color: rgba(0,0,0,0.2); }
 [data-theme="light"] .col-cards::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); }
 [data-theme="light"] .card-move:hover { background: rgba(0,0,0,0.06); }
+[data-theme="light"] .card-btn { background: rgba(0,0,0,0.04); }
+[data-theme="light"] .card-btn:hover { background: rgba(0,0,0,0.08); }
 [data-theme="light"] .col-clear:hover { background: rgba(226,92,92,0.12); }
 [data-theme="light"] [data-dnd-kit-drag-overlay] .kanban-card { box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
 
