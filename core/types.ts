@@ -52,11 +52,15 @@ export interface Bookmark {
   order: number;
 }
 
+export type TodoStatus = 'pending' | 'in-progress' | 'done';
+
 export interface TodoItem {
   id: string;
+  number: number;
   text: string;
-  done: boolean;
+  status: TodoStatus;
   priority: 'high' | 'med' | 'low';
+  order: number;
   createdAt: number;
 }
 
