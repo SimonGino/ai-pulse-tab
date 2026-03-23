@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { STORAGE_KEYS } from '@/core/constants';
 import type { TodoItem, TodoStatus } from '@/core/types';
 
@@ -38,15 +38,14 @@ function migrateTodos(
     const number = 'number' in item && typeof item.number === 'number' ? item.number : num++;
     const order = 'order' in item && typeof item.order === 'number' ? item.order : idx;
 
-    const { done: _done, ...rest } = item as Record<string, unknown>;
     return {
-      id: rest.id as string,
+      id: item.id,
       number,
-      text: rest.text as string,
+      text: item.text,
       status,
-      priority: rest.priority as TodoItem['priority'],
+      priority: item.priority,
       order,
-      createdAt: rest.createdAt as number,
+      createdAt: item.createdAt,
     };
   });
 
@@ -67,7 +66,6 @@ function reindex(todos: TodoItem[], status: TodoStatus): TodoItem[] {
 
 export function useTodos() {
   const [todos, setTodos] = useState<TodoItem[]>([]);
-  const [nextNumber, setNextNumber] = useState(1);
   const todosRef = useRef<TodoItem[]>([]);
   const nextNumberRef = useRef(1);
 
@@ -89,7 +87,6 @@ export function useTodos() {
         todosRef.current = migrated;
         nextNumberRef.current = finalNN;
         setTodos(migrated);
-        setNextNumber(finalNN);
 
         // Persist if migration occurred
         if (stored.some((t) => 'done' in t && !('status' in t))) {
@@ -109,7 +106,6 @@ export function useTodos() {
       if (changes[STORAGE_KEYS.todoNextNumber]?.newValue) {
         const nn = changes[STORAGE_KEYS.todoNextNumber].newValue as number;
         nextNumberRef.current = nn;
-        setNextNumber(nn);
       }
     };
     browser.storage.local.onChanged.addListener(listener);
@@ -129,7 +125,6 @@ export function useTodos() {
       setTodos(updated);
       if (nn !== undefined) {
         nextNumberRef.current = nn;
-        setNextNumber(nn);
       }
       persist(updated, nn);
     },
@@ -247,9 +242,9 @@ export function useTodos() {
       .filter((t) => t.status === status)
       .sort((a, b) => a.order - b.order);
 
-  const pending = byStatus('pending');
-  const inProgress = byStatus('in-progress');
-  const done = byStatus('done');
+  const pending = useMemo(() => byStatus('pending'), [todos]);
+  const inProgress = useMemo(() => byStatus('in-progress'), [todos]);
+  const done = useMemo(() => byStatus('done'), [todos]);
 
   const doneCount = done.length;
   const totalCount = todos.length;
