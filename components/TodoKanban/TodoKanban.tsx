@@ -123,9 +123,6 @@ export function TodoKanban() {
     setActiveTodo(null);
   };
 
-  const progressPercent =
-    totalCount > 0 ? (doneCount / totalCount) * 100 : 0;
-
   return (
     <div className="kanban-section">
       <div className="kanban-header">
@@ -167,13 +164,6 @@ export function TodoKanban() {
             Add
           </button>
         </div>
-      </div>
-
-      <div className="kanban-progress">
-        <div
-          className="kanban-progress-fill"
-          style={{ width: `${progressPercent}%` }}
-        />
       </div>
 
       <DndContext
