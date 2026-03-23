@@ -356,7 +356,8 @@ body {
 .kanban-card:hover .card-del { opacity: 1; }
 .card-del:hover { color: var(--danger); }
 
-.card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+.card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; padding-right: 16px; }
+.card-header-right { display: flex; align-items: center; gap: 4px; }
 .card-num { font-size: 8px; color: var(--t3); }
 .card-pri {
   font-size: 7px;
@@ -407,6 +408,19 @@ body {
 .move-in-progress:hover { background: rgba(232,163,60,0.12); }
 .move-done { color: var(--gpt); }
 .move-done:hover { background: rgba(107,200,143,0.12); }
+
+.card-edit-btn {
+  font-size: 9px;
+  cursor: pointer;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.04);
+  border: none;
+  transition: all 0.15s;
+  color: var(--t3);
+  font-family: 'DM Sans', sans-serif;
+}
+.card-edit-btn:hover { background: rgba(255,255,255,0.08); color: var(--t2); }
 
 /* Pri buttons (shared, keep from old CSS) */
 .pri-btns { display: flex; gap: 2px; flex-shrink: 0; }

@@ -76,9 +76,11 @@ export function TodoCard({ todo, onMove, onDelete, onEdit }: TodoCardProps) {
 
       <div className="card-header">
         <span className="card-num">#{todo.number}</span>
-        <span className={`card-pri cp-${todo.priority[0]}`}>
-          {PRIORITY_LABELS[todo.priority]}
-        </span>
+        <div className="card-header-right">
+          <span className={`card-pri cp-${todo.priority[0]}`}>
+            {PRIORITY_LABELS[todo.priority]}
+          </span>
+        </div>
       </div>
 
       {editing ? (
@@ -110,6 +112,18 @@ export function TodoCard({ todo, onMove, onDelete, onEdit }: TodoCardProps) {
             aria-label={`Move to ${STATUS_ORDER[statusIdx - 1]}`}
           >
             ←
+          </button>
+        )}
+        {todo.status !== 'done' && (
+          <button
+            className="card-edit-btn"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleDoubleClick();
+            }}
+            aria-label="Edit task"
+          >
+            ✎
           </button>
         )}
         <div style={{ flex: 1 }} />
