@@ -10,7 +10,7 @@ The overall page layout remains two-column:
 - **Left column (340px)**: AI Usage cards (Claude, ChatGPT) — full height, unchanged
 - **Right column (1fr)**: Speed Dial on top, Kanban TodoList below
 
-The Kanban board replaces the original `TodoList` component in the right column, using the full available width for a three-column grid.
+The Kanban board replaces the original `TodoList` component in the right column, using the full available width for a three-column grid. Remove the current `max-width: 420px` constraint on the todo section.
 
 ## Data Model
 
@@ -29,7 +29,7 @@ interface TodoItem {
 ### Changes from current model
 - `done: boolean` replaced by `status: 'pending' | 'in-progress' | 'done'`
 - Added `number`: global auto-increment, assigned on creation, never recycled on delete
-- Added `order`: per-column sort weight, updated on drag reorder
+- Added `order`: integer sort weight within column. After every move or reorder, re-index all items in affected column(s) as 0, 1, 2, ... to keep values compact. When quick-moving a card to the end of a target column, assign `max(order) + 1` before re-index
 
 ### Number counter
 A separate storage key `'todoNextNumber'` holds the next number to assign. On `addTodo`, the counter increments and persists.
@@ -47,7 +47,9 @@ TodoKanban/
 ### TodoKanban.tsx
 - Holds `useTodos()` state
 - Wraps children in `DndContext` from `@dnd-kit/core`
-- Handles `onDragEnd`: determines if cross-column move or intra-column reorder
+- Handles `onDragEnd`: uses `over` item's position to compute insertion index via `arrayMove` from `@dnd-kit/sortable`. For cross-column moves, inserts before the hovered card; if dropped on empty column area, appends to end
+- Handles `onDragCancel`: card returns to original position, no state change
+- Sensors: `PointerSensor` with `activationConstraint: { distance: 5 }` (prevents conflict with double-click-to-edit), `KeyboardSensor` with `sortableKeyboardCoordinates`
 - Renders input row (text input + H/M/L priority selector + Add button)
 - Renders progress bar (completed / total)
 - Renders three `KanbanColumn` components in a CSS grid
@@ -58,6 +60,7 @@ TodoKanban/
 - Column header: title, item count badge, "Clear all" button (DONE column only)
 - Column styling: colored top border (gray for PENDING, orange for IN PROGRESS, green for DONE)
 - Background tint matching column status
+- Empty column: shows a muted placeholder text ("No tasks") and remains a valid drop target via `useDroppable` fallback on the column container (min-height ensures droppable area)
 
 ### TodoCard.tsx
 - Props: `todo`, `onMove`, `onDelete`, `onEdit`
@@ -96,6 +99,7 @@ Sorting: returns todos grouped by status, each group sorted by `order` ascending
 - Dragging to DONE column sets status to `'done'`
 - Dragging from DONE to another column clears done state
 - Supports intra-column reorder (drag up/down within same column)
+- Drag cancellation (Escape or drop outside columns): card returns to original position, no state change
 
 ### Quick-Move Buttons
 - Appear on card hover
@@ -118,29 +122,29 @@ Sorting: returns todos grouped by status, each group sorted by `order` ascending
 ## Progress Bar
 
 - Located below the input row, above the Kanban columns
-- Shows `completed / total` as text label (e.g., "2 / 5 done")
-- Green fill bar (`#4caf50`) proportional to completion ratio
+- Shows `completed / total` as text label (e.g., "2 / 5 done") where "completed" means `status === 'done'`
+- Green fill bar (`#4caf50`) proportional to done count / total count
 - Animates width changes with CSS transition
 
 ## Storage & Persistence
 
 - Storage: `chrome.storage.local`, key `'todos'` (unchanged)
 - New key: `'todoNextNumber'` for auto-increment counter
-- Cross-tab sync: `storage.onChanged` listener (unchanged)
+- Cross-tab sync: `storage.onChanged` listener watches both `'todos'` and `'todoNextNumber'` keys
 - All mutations immediately persist to storage
+- `todoNextNumber` is never decremented on delete or clearDone — numbers are never recycled
 
 ### Data Migration
 
-On first load, if existing todos have `done` field but no `status` field:
-1. `done: true` → `status: 'done'`
-2. `done: false` → `status: 'pending'`
-3. Assign `number` by `createdAt` order (1, 2, 3...)
-4. Assign `order` by current array position
-5. Set `todoNextNumber` to `max(number) + 1`
-6. Write migrated data back to storage
-7. Remove `done` field from each item
+On first load, check if **any** todo item has a `done` field but no `status` field. If so, migrate **all** items:
+1. For each item: if `done` exists, map `done: true` → `status: 'done'`, `done: false` → `status: 'pending'`, then remove the `done` field. If item already has `status`, keep it as-is.
+2. For items missing `number`: assign by `createdAt` order (1, 2, 3...)
+3. For items missing `order`: assign by current array position (0, 1, 2...)
+4. Set `todoNextNumber` to `max(all numbers) + 1`
+5. Write migrated data back to storage
 
-Migration runs once; subsequent loads skip it.
+If todo array is empty, no migration needed — `todoNextNumber` defaults to 1.
+Migration is idempotent: if all items already have `status` and `number`, no changes are made.
 
 ## Dependencies
 
@@ -166,3 +170,5 @@ New packages:
 - No task due dates or time tracking
 - No column collapse/expand
 - No task labels or categories beyond priority
+- No per-column item limit (unlimited todos)
+- No ARIA roles or keyboard-based card movement beyond @dnd-kit's built-in KeyboardSensor support
