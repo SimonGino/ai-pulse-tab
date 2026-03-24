@@ -20,6 +20,7 @@ const STATUSES: TodoStatus[] = ['pending', 'in-progress', 'done'];
 
 export function TodoKanban() {
   const {
+    todos,
     pending,
     inProgress,
     done,
@@ -76,8 +77,7 @@ export function TodoKanban() {
 
   const handleDragStart = (event: DragStartEvent) => {
     const id = event.active.id as string;
-    const allItems = [...pending, ...inProgress, ...done];
-    setActiveTodo(allItems.find((t) => t.id === id) ?? null);
+    setActiveTodo(todos.find((t) => t.id === id) ?? null);
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -114,8 +114,10 @@ export function TodoKanban() {
         reorderInColumn(activeStatus, reordered.map((t) => t.id));
       }
     } else {
-      // Cross-column move: append to target column
-      moveTodo(activeId, overStatus);
+      // Cross-column move: insert at hovered card's position
+      const targetItems = getColumnItems(overStatus);
+      const targetIndex = targetItems.findIndex((t) => t.id === overId);
+      moveTodo(activeId, overStatus, targetIndex >= 0 ? targetIndex : undefined);
     }
   };
 

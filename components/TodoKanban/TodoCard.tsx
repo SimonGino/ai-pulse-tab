@@ -41,7 +41,7 @@ export function TodoCard({ todo, onMove, onDelete, onEdit }: TodoCardProps) {
   const canMoveLeft = statusIdx > 0;
   const canMoveRight = statusIdx < STATUS_ORDER.length - 1;
 
-  const handleDoubleClick = () => {
+  const startEditing = () => {
     if (todo.status === 'done') return;
     setEditing(true);
     setEditText(todo.text);
@@ -77,7 +77,7 @@ export function TodoCard({ todo, onMove, onDelete, onEdit }: TodoCardProps) {
           {todo.status !== 'done' && (
             <button
               className="card-btn"
-              onClick={(e) => { e.stopPropagation(); handleDoubleClick(); }}
+              onClick={(e) => { e.stopPropagation(); startEditing(); }}
               aria-label="Edit task"
             >
               ✎
@@ -105,7 +105,7 @@ export function TodoCard({ todo, onMove, onDelete, onEdit }: TodoCardProps) {
       ) : (
         <div
           className={`card-text ${todo.status === 'done' ? 'done' : ''}`}
-          onDoubleClick={handleDoubleClick}
+          onDoubleClick={startEditing}
         >
           {todo.text}
         </div>

@@ -75,6 +75,8 @@ export function useTodos() {
       .then((result: Record<string, unknown>) => {
         const stored = (result[STORAGE_KEYS.todos] ?? []) as (TodoItem | OldTodoItem)[];
         if (stored.length === 0) {
+          const storedNN = result[STORAGE_KEYS.todoNextNumber] as number | undefined;
+          if (storedNN) nextNumberRef.current = storedNN;
           todosRef.current = [];
           setTodos([]);
           return;
