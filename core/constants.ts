@@ -27,6 +27,7 @@ export const STORAGE_KEYS = {
   bookmarks: 'bookmarks',
   collapsedProviders: 'collapsedProviders',
   todos: 'todos',
+  todoNextNumber: 'todoNextNumber',
   theme: 'theme',
 } as const;
 

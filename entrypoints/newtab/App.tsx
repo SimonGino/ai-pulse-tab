@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useUsageData } from '@/hooks/useUsageData';
 import { ProviderCard } from '@/components/ProviderCard';
 import { BookmarkGrid } from '@/components/BookmarkGrid';
-import { TodoList } from '@/components/TodoList';
+import { TodoKanban } from '@/components/TodoKanban';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { PROVIDERS } from '@/core/constants';
 
@@ -111,7 +111,7 @@ export default function App() {
         {/* Right: Speed Dial + Todo */}
         <div className="right-col">
           <BookmarkGrid />
-          <TodoList />
+          <TodoKanban />
         </div>
       </div>
     </>
